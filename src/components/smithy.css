@@ -1,6 +1,6 @@
 /* ============================================================
-   SMITHY — projects are forged here.
-   Forge background (png), ember glow, responsive project card.
+   SMITHY — an ancient sword-maker showcases his weapons.
+   Sword rack + cinematic forging sequence + synced reveal.
    ============================================================ */
 
 .smithy {
@@ -8,7 +8,6 @@
   height: 100vh;
   height: 100dvh;
 
-  /* optimized webp of the forge backdrop (source png kept on disk) */
   background-image: url("../assets/images/smithy-bg.webp");
   background-size: cover;
   background-position: center;
@@ -19,7 +18,6 @@
   color: white;
 }
 
-/* DARK OVERLAY */
 .smithy::before {
   content: "";
   position: absolute;
@@ -31,10 +29,10 @@
 /* FIRE GLOW */
 .fire-glow {
   position: absolute;
-  right: 10%;
-  bottom: 10%;
-  width: clamp(220px, 34vw, 450px);
-  height: clamp(220px, 34vw, 450px);
+  right: 8%;
+  bottom: 8%;
+  width: clamp(220px, 34vw, 460px);
+  height: clamp(220px, 34vw, 460px);
   border-radius: 50%;
   background: rgba(255, 100, 0, 0.3);
   filter: blur(120px);
@@ -42,101 +40,258 @@
   z-index: 2;
 }
 
-/* MAIN CONTENT */
-.anvil-wrapper {
+/* FIRE IMAGE — screen-blended flame */
+.forge-fire {
+  position: absolute;
+  right: 6%;
+  bottom: 5%;
+  width: clamp(120px, 18vw, 220px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  z-index: 3;
+  animation: fireFlicker 2.2s infinite ease-in-out;
+}
+
+@keyframes fireFlicker {
+  0%, 100% { transform: scale(1); opacity: 0.55; }
+  30% { transform: scale(1.04); opacity: 0.65; }
+  60% { transform: scale(0.98); opacity: 0.5; }
+}
+
+/* ---------- FORGE STAGE ---------- */
+
+.forge-stage {
   position: absolute;
   left: 50%;
-  top: 52%;
+  top: 44%;
   transform: translate(-50%, -50%);
+  width: min(92vw, 620px);
+  z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 5;
-  width: min(92vw, 700px);
 }
 
-/* ANVIL */
+.anvil-wrap {
+  width: clamp(110px, 16vw, 190px);
+  margin-bottom: -8px;
+  z-index: 1;
+}
+
 .anvil {
-  width: clamp(120px, 18vw, 220px);
-  animation: anvilFloat 4s ease-in-out infinite;
-  margin-bottom: 20px;
-}
-
-/* PROJECT CARD */
-.project-card {
   width: 100%;
-  box-sizing: border-box;
-  text-align: center;
-  background: rgba(10, 10, 10, 0.82);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 120, 0, 0.35);
-  box-shadow: 0 0 40px rgba(255, 100, 0, 0.12);
-  padding: clamp(18px, 3vw, 28px);
-}
-
-.project-card h1 {
-  margin: 0 0 15px;
-  color: #ffb347;
-  font-size: clamp(22px, 3.4vw, 42px);
-}
-
-.project-card p {
-  line-height: 1.6;
-  opacity: 0.9;
-  font-size: clamp(13px, 1.5vw, 16px);
-  margin: 0 0 6px;
-}
-
-.project-card span {
   display: block;
-  margin-top: 18px;
-  color: #ff9966;
-  font-weight: bold;
-  font-size: clamp(12px, 1.3vw, 14px);
+  filter: brightness(0.85);
 }
 
-/* PROJECT EYEBROW */
+/* ---------- WORKPIECE (the sword being forged) ---------- */
+
+.workpiece {
+  width: clamp(180px, 30vw, 340px);
+  margin-top: -34px;
+  z-index: 2;
+  transform-origin: 50% 88%;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), filter 0.55s ease;
+}
+
+.workpiece img {
+  width: 100%;
+  display: block;
+  filter: grayscale(1) brightness(0.55);
+  transition: filter 0.6s ease;
+}
+
+/* phase: raw stock lying on the anvil */
+.workpiece.phase-raw {
+  transform: rotate(90deg) translateY(-14%) scale(0.9);
+  filter: brightness(0.6);
+}
+
+/* heating: lifted over the fire, warming up */
+.workpiece.phase-heating {
+  transform: rotate(24deg) translateY(-58%) scale(0.94);
+  filter: brightness(1.05) drop-shadow(0 0 22px rgba(255, 120, 30, 0.55));
+}
+
+.workpiece.phase-heating img {
+  filter: grayscale(0.6) brightness(0.9) sepia(0.7) hue-rotate(-18deg) saturate(2.4);
+}
+
+/* strikes: hammer comes down, blade dips and rings */
+.workpiece.phase-strike1 {
+  transform: rotate(2deg) translateY(-6%) scale(1.02);
+  filter: brightness(1.35) drop-shadow(0 0 30px rgba(255, 170, 60, 0.7));
+  animation: strikeJolt 0.5s cubic-bezier(0.85, 0, 0.15, 1);
+}
+
+.workpiece.phase-strike2 {
+  transform: rotate(-2deg) translateY(-4%) scale(1.05);
+  filter: brightness(1.45) drop-shadow(0 0 34px rgba(255, 180, 70, 0.8));
+  animation: strikeJolt 0.5s cubic-bezier(0.85, 0, 0.15, 1);
+}
+
+@keyframes strikeJolt {
+  0% { transform: rotate(2deg) translateY(-6%) scale(1.02); }
+  35% { transform: rotate(7deg) translateY(4%) scale(1.06); }
+  60% { transform: rotate(4deg) translateY(1%) scale(1.04); }
+  100% { transform: rotate(2deg) translateY(-6%) scale(1.02); }
+}
+
+/* quenching: dipped down, steam-cool shift */
+.workpiece.phase-quench {
+  transform: rotate(-6deg) translateY(12%) scale(0.98);
+  filter: brightness(0.9) drop-shadow(0 0 16px rgba(140, 190, 220, 0.4));
+}
+
+.workpiece.phase-quench img {
+  filter: grayscale(0.3) brightness(0.95) saturate(0.7);
+}
+
+/* finished blade: presented upright, full polish */
+.workpiece.phase-finish {
+  transform: rotate(0deg) translateY(-8%) scale(1.12);
+  filter: brightness(1.12) drop-shadow(0 14px 22px rgba(0, 0, 0, 0.55));
+}
+
+.workpiece.phase-finish img {
+  filter: grayscale(0) brightness(1.05) contrast(1.08);
+}
+
+/* ---------- MOTIF VARIATIONS (per-project blade identity) ---------- */
+
+.workpiece.motif-b1 img { filter: hue-rotate(-8deg); }
+.workpiece.motif-b2 img { filter: hue-rotate(12deg); }
+.workpiece.motif-g1 img { transform: scaleX(-1); }
+.workpiece.motif-g2 img { transform: rotate(2deg) scale(1.02); }
+
+/* ---------- PHASE TRACK ---------- */
+
+.phase-track {
+  list-style: none;
+  display: flex;
+  gap: clamp(8px, 2vw, 18px);
+  padding: 0;
+  margin: 22px 0 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.phase-track li {
+  font-size: clamp(9px, 1.2vw, 11px);
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 5px 10px 4px;
+  transition: color 0.4s ease, border-color 0.4s ease, background 0.4s ease;
+}
+
+.phase-track li.done {
+  color: rgba(255, 179, 71, 0.75);
+  border-color: rgba(255, 179, 71, 0.35);
+}
+
+.phase-track li.now {
+  color: #ffb347;
+  border-color: #ffb347;
+  background: rgba(255, 130, 40, 0.12);
+  box-shadow: 0 0 14px rgba(255, 130, 40, 0.25);
+}
+
+/* ---------- INFO PANEL (revealed with the blade) ---------- */
+
+.forge-info {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  transform: translateX(-50%) translateY(24px);
+  width: min(94vw, 660px);
+  background: rgba(8, 6, 5, 0.82);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 120, 0, 0.3);
+  padding: clamp(16px, 3vw, 26px) clamp(18px, 3vw, 30px);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.7s ease 0.1s, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+}
+
+.forge-info.revealed {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.forge-info h1 {
+  margin: 0 0 10px;
+  color: #ffb347;
+  font-size: clamp(20px, 3vw, 34px);
+}
+
 .project-eyebrow {
-  font-size: 11px;
+  font-size: 10.5px;
   letter-spacing: 4px;
   opacity: 0.5;
-  margin: 0 0 12px;
+  margin: 0 0 8px;
 }
 
-/* DIRECTIONAL CARD TRANSITION */
-.project-card.dir-next {
-  animation: cardFromRight 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+.project-desc {
+  margin: 0 0 8px;
+  font-size: clamp(13px, 1.5vw, 15.5px);
+  line-height: 1.6;
+  opacity: 0.9;
 }
 
-.project-card.dir-prev {
-  animation: cardFromLeft 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+.project-tech {
+  display: block;
+  color: #ff9966;
+  font-weight: 600;
+  font-size: clamp(11.5px, 1.3vw, 13.5px);
+  margin-bottom: 6px;
 }
 
-@keyframes cardFromRight {
-  from {
-    opacity: 0;
-    transform: translateX(36px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.project-live {
+  font-size: 11.5px;
+  color: rgba(120, 200, 130, 0.8);
+  margin: 4px 0 0;
 }
 
-@keyframes cardFromLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-36px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.project-highlights {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
 }
 
-/* CONTROLS */
+.project-highlights li::before {
+  content: "— ";
+  color: rgba(255, 150, 60, 0.7);
+}
+
+.project-links {
+  margin-top: 12px;
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+}
+
+.project-links a {
+  color: #ffb347;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 179, 71, 0.35);
+  padding-bottom: 2px;
+}
+
+.project-links a:hover {
+  border-bottom-color: #ffb347;
+}
+
+/* ---------- CONTROLS ---------- */
+
 .controls {
-  margin-top: 25px;
+  margin-top: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -144,12 +299,12 @@
 }
 
 .controls button {
-  width: 52px;
-  height: 52px;
+  width: 46px;
+  height: 46px;
   background: rgba(255, 120, 0, 0.15);
   border: 1px solid rgba(255, 120, 0, 0.35);
   color: white;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   transition: background 0.3s ease, border-color 0.3s ease;
 }
@@ -160,13 +315,14 @@
 }
 
 .project-count {
-  font-size: 13px;
+  font-size: 12.5px;
   letter-spacing: 2px;
   opacity: 0.7;
-  min-width: 64px;
+  min-width: 56px;
 }
 
-/* BACK BUTTON */
+/* ---------- BACK ---------- */
+
 .smithy-back {
   position: absolute;
   top: 20px;
@@ -175,8 +331,8 @@
   background: rgba(0, 0, 0, 0.75);
   color: white;
   border: 1px solid #ff7a00;
-  padding: 12px 18px;
-  font-size: 14px;
+  padding: 11px 18px;
+  font-size: 13.5px;
   letter-spacing: 1px;
   cursor: pointer;
   transition: background 0.3s ease;
@@ -186,61 +342,64 @@
   background: rgba(255, 120, 0, 0.15);
 }
 
-/* FOCUS */
+/* ---------- FOCUS ---------- */
+
 .controls button:focus-visible,
-.smithy-back:focus-visible {
+.smithy-back:focus-visible,
+.project-links a:focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.8);
   outline-offset: 3px;
 }
 
-/* ANIMATIONS */
+/* ---------- ANIMATIONS ---------- */
+
 @keyframes glowPulse {
-  50% {
-    transform: scale(1.1);
-  }
+  50% { transform: scale(1.1); }
 }
 
-@keyframes anvilFloat {
-  50% {
-    transform: translateY(-10px);
-  }
-}
+/* ---------- RESPONSIVE ---------- */
 
-/* RESPONSIVE */
 @media (max-width: 640px) {
-  .anvil-wrapper {
-    top: 54%;
+  .forge-stage {
+    top: 36%;
   }
 
-  .fire-glow {
-    right: -15%;
-    bottom: -8%;
+  .forge-info {
+    bottom: 2.5%;
+    max-height: 52vh;
+    overflow-y: auto;
   }
 
-  .controls button {
-    width: 46px;
-    height: 46px;
+  .phase-track {
+    gap: 6px;
+  }
+
+  .phase-track li {
+    padding: 4px 7px 3px;
+    letter-spacing: 1px;
+  }
+
+  .forge-fire {
+    width: 90px;
+    right: 4%;
   }
 }
 
-/* REDUCED MOTION */
+/* ---------- REDUCED MOTION ---------- */
+
 @media (prefers-reduced-motion: reduce) {
-  .anvil {
+  .fire-glow,
+  .forge-fire {
     animation: none;
   }
 
-  .fire-glow {
+  .workpiece,
+  .workpiece img {
+    transition: none;
+  }
+
+  .workpiece.phase-strike1,
+  .workpiece.phase-strike2 {
     animation: none;
-  }
-
-  .project-card.dir-next,
-  .project-card.dir-prev {
-    animation: fadeOnly 0.2s ease both;
-  }
-}
-
-@keyframes fadeOnly {
-  from {
-    opacity: 0;
   }
 }

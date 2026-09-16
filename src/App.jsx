@@ -4,6 +4,9 @@ import LoadingScene from "./components/LoadingScene";
 import RoomLoading from "./components/RoomLoading";
 import AboutScene from "./components/AboutScene";
 import RoomScene from "./components/RoomScene";
+import ContactBook from "./components/ContactBook";
+import BadgeWall from "./components/BadgeWall";
+import JourneyForge from "./components/JourneyForge";
 import SkillsScene from "./components/SkillsScene";
 import SwordTransition from "./components/SwordTransition";
 import SmithLoading from "./components/SmithLoading";
@@ -19,9 +22,7 @@ export default function App() {
   const audioRef = useRef(null);
 
   // One Audio instance for the app's lifetime. Music plays on entry/about;
-  // elsewhere it pauses — but never rewinds, so returning to entry resumes
-  // the track instead of restarting it. Autoplay-safe: play() failures are
-  // swallowed, and the app never requires sound to navigate.
+  // elsewhere it pauses — but never rewinds, so returning resumes the track.
   useEffect(() => {
     const audio = new Audio(bgMusic);
     audio.loop = true;
@@ -58,8 +59,20 @@ export default function App() {
       {scene === "roomLoading" && <RoomLoading onComplete={() => go("room")} />}
 
       {scene === "room" && (
-        <RoomScene goToSkills={() => go("swordTransition")} goToSmithy={() => go("smithloading")} />
+        <RoomScene
+          goToBook={() => go("book")}
+          goToWall={() => go("wall")}
+          goToJourney={() => go("journey")}
+          goToSkills={() => go("swordTransition")}
+          goToSmithy={() => go("smithloading")}
+        />
       )}
+
+      {scene === "book" && <ContactBook goBack={() => go("room")} />}
+
+      {scene === "wall" && <BadgeWall goBack={() => go("room")} />}
+
+      {scene === "journey" && <JourneyForge goBack={() => go("room")} />}
 
       {scene === "swordTransition" && <SwordTransition onComplete={() => go("skills")} />}
 
@@ -69,16 +82,14 @@ export default function App() {
 
       {scene === "smithy" && <SmithyScene goBack={() => go("room")} />}
 
-      {muted && (
-        <button
-          type="button"
-          className="sound-toggle"
-          onClick={() => setMuted(false)}
-          aria-label="Unmute music"
-        >
-          sound off &#8212; click to unmute
-        </button>
-      )}
+      <button
+        type="button"
+        className={`sound-toggle ${muted ? "is-muted" : ""}`}
+        onClick={() => setMuted((m) => !m)}
+        aria-label={muted ? "Unmute music" : "Mute music"}
+      >
+        {muted ? "sound: off" : "sound: on"}
+      </button>
     </div>
   );
 }
