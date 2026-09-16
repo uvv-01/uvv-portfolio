@@ -1,0 +1,116 @@
+/* ============================================================
+   ROOM — central hub. Two destinations, kept atmospheric:
+   faint ember glow + quiet label, revealed on hover/focus.
+   ============================================================ */
+
+.room-scene {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.room-zone {
+  position: absolute;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* sword corner — upper left */
+.zone-sword {
+  top: 8%;
+  left: 6%;
+  width: 28%;
+  height: 34%;
+}
+
+/* smithy corner — right of center; % keeps it on-screen at any width */
+.zone-smithy {
+  top: 42%;
+  left: 56%;
+  width: 28%;
+  height: 34%;
+}
+
+/* faint ember glow at rest, brighter on hover/focus */
+.room-zone::after {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 120, 60, 0.14) 0%,
+    rgba(255, 120, 60, 0.05) 45%,
+    transparent 70%
+  );
+  filter: blur(14px);
+  opacity: 0.5;
+  transition: opacity 0.45s ease;
+  animation: zoneBreath 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.room-zone:hover::after,
+.room-zone:focus-visible::after {
+  opacity: 1;
+}
+
+@keyframes zoneBreath {
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+/* quiet label chip */
+.zone-label {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: clamp(10px, 1.1vw, 13px);
+  letter-spacing: 4px;
+  color: rgba(255, 255, 255, 0.55);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 7px 14px 5px;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+
+.zone-label small {
+  display: block;
+  font-size: 0.72em;
+  letter-spacing: 3px;
+  opacity: 0.6;
+  margin-top: 3px;
+}
+
+.room-zone:hover .zone-label,
+.room-zone:focus-visible .zone-label {
+  opacity: 1;
+}
+
+/* one-time discoverability: zones breathe faintly for the first seconds */
+.room-scene.just-entered .zone-label {
+  opacity: 0.45;
+}
+
+.room-zone:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-zone::after {
+    animation: none;
+  }
+}

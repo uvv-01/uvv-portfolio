@@ -1,0 +1,272 @@
+/* ============================================================
+   SKILLS — three-slot sword arc
+   Center = active skill. Sides = previews. No circle, no 3D.
+   Directional movement is keyframe-driven from a mount/class
+   change, so rapid input can never wedge a half-finished state.
+   ============================================================ */
+
+.skills-container {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background: black;
+  display: flex;
+  color: white;
+  overflow: hidden;
+  position: relative;
+}
+
+.arc-left {
+  width: 58%;
+  position: relative;
+}
+
+.arc-right-panel {
+  width: 42%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(24px, 4vw, 60px);
+  background: rgba(0, 0, 0, 0.7);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- SWORD SLOTS (rest positions) ---------- */
+
+.sword-slot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(120px, 14vw, 200px);
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  will-change: transform, opacity, filter;
+}
+
+.sword-slot img {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none;
+}
+
+.sword-slot.left {
+  transform: translate(-185%, -50%) scale(0.8) rotate(-10deg);
+  opacity: 0.3;
+  filter: blur(1.5px);
+}
+
+.sword-slot.center {
+  transform: translate(-50%, -50%) scale(1.3);
+  opacity: 1;
+  filter: blur(0);
+  z-index: 5;
+  cursor: default;
+}
+
+.sword-slot.right {
+  transform: translate(85%, -50%) scale(0.8) rotate(10deg);
+  opacity: 0.3;
+  filter: blur(1.5px);
+}
+
+/* side hover: offer the next move */
+.sword-slot.left:hover,
+.sword-slot.right:hover {
+  filter: blur(0.5px) drop-shadow(0 0 18px rgba(255, 255, 255, 0.35));
+  opacity: 0.55;
+  transition: filter 0.25s ease, opacity 0.25s ease;
+}
+
+/* ---------- DIRECTIONAL TRANSITIONS (keyframes) ---------- */
+/* Forward: incoming enters from the right edge, old left exits far-left,
+   old center settles into the left slot. Backward is the mirror. */
+
+@keyframes enterFromRight {
+  from {
+    transform: translate(160%, -50%) scale(0.65) rotate(14deg);
+    opacity: 0;
+  }
+}
+@keyframes enterFromLeft {
+  from {
+    transform: translate(-260%, -50%) scale(0.65) rotate(-14deg);
+    opacity: 0;
+  }
+}
+@keyframes settleFromCenter {
+  from {
+    transform: translate(-50%, -50%) scale(1.3);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+@keyframes exitFarLeft {
+  to {
+    transform: translate(-260%, -50%) scale(0.65) rotate(-14deg);
+    opacity: 0;
+  }
+}
+@keyframes exitFarRight {
+  to {
+    transform: translate(160%, -50%) scale(0.65) rotate(14deg);
+    opacity: 0;
+  }
+}
+
+.sword-slot.enter-from-right {
+  animation: enterFromRight 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.sword-slot.enter-from-left {
+  animation: enterFromLeft 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.sword-slot.was-center {
+  animation: settleFromCenter 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.sword-slot.was-center-right {
+  animation: settleFromCenter 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.sword-slot.exit-far-left {
+  animation: exitFarLeft 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.sword-slot.exit-far-right {
+  animation: exitFarRight 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ---------- TEXT PANEL ---------- */
+
+.skill-text {
+  animation: panelIn 0.55s ease both;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.skill-eyebrow {
+  font-size: 12px;
+  letter-spacing: 4px;
+  opacity: 0.5;
+  margin: 0 0 14px;
+}
+
+.arc-right-panel h1 {
+  font-size: clamp(26px, 3.2vw, 38px);
+  margin: 0 0 16px;
+}
+
+.skill-desc {
+  font-size: clamp(15px, 1.4vw, 18px);
+  opacity: 0.85;
+  margin: 0 0 8px;
+}
+
+/* supporting line — styled via the pre-existing .line hook */
+.line {
+  margin-top: 18px;
+  opacity: 0.9;
+  font-style: italic;
+  font-size: clamp(13px, 1.2vw, 15px);
+}
+
+/* ---------- HINT + BACK ---------- */
+
+.arc-hint {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 3px;
+  opacity: 0.35;
+  user-select: none;
+}
+
+.back-btn {
+  margin-top: 40px;
+  align-self: flex-start;
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 14px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.back-btn:hover {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ---------- FOCUS ---------- */
+
+.sword-slot:focus-visible,
+.back-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 4px;
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 900px) {
+  .skills-container {
+    flex-direction: column;
+  }
+
+  .arc-left {
+    width: 100%;
+    flex: 1 1 55%;
+    min-height: 0;
+  }
+
+  .arc-right-panel {
+    width: 100%;
+    flex: 1 1 45%;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    justify-content: flex-start;
+    padding-top: 18px;
+  }
+
+  .back-btn {
+    margin-top: 18px;
+  }
+
+  .arc-hint {
+    bottom: 10px;
+  }
+}
+
+/* ---------- REDUCED MOTION ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .sword-slot.enter-from-right,
+  .sword-slot.enter-from-left,
+  .sword-slot.was-center,
+  .sword-slot.was-center-right,
+  .sword-slot.exit-far-left,
+  .sword-slot.exit-far-right {
+    animation: fadeOnly 0.25s ease both;
+  }
+
+  .skill-text {
+    animation: none;
+  }
+}
+
+@keyframes fadeOnly {
+  from {
+    opacity: 0.2;
+  }
+}

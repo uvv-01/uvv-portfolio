@@ -1,0 +1,246 @@
+/* ============================================================
+   SMITHY — projects are forged here.
+   Forge background (png), ember glow, responsive project card.
+   ============================================================ */
+
+.smithy {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+
+  /* optimized webp of the forge backdrop (source png kept on disk) */
+  background-image: url("../assets/images/smithy-bg.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+
+/* DARK OVERLAY */
+.smithy::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1;
+}
+
+/* FIRE GLOW */
+.fire-glow {
+  position: absolute;
+  right: 10%;
+  bottom: 10%;
+  width: clamp(220px, 34vw, 450px);
+  height: clamp(220px, 34vw, 450px);
+  border-radius: 50%;
+  background: rgba(255, 100, 0, 0.3);
+  filter: blur(120px);
+  animation: glowPulse 3s ease-in-out infinite;
+  z-index: 2;
+}
+
+/* MAIN CONTENT */
+.anvil-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+  width: min(92vw, 700px);
+}
+
+/* ANVIL */
+.anvil {
+  width: clamp(120px, 18vw, 220px);
+  animation: anvilFloat 4s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+
+/* PROJECT CARD */
+.project-card {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  background: rgba(10, 10, 10, 0.82);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 120, 0, 0.35);
+  box-shadow: 0 0 40px rgba(255, 100, 0, 0.12);
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.project-card h1 {
+  margin: 0 0 15px;
+  color: #ffb347;
+  font-size: clamp(22px, 3.4vw, 42px);
+}
+
+.project-card p {
+  line-height: 1.6;
+  opacity: 0.9;
+  font-size: clamp(13px, 1.5vw, 16px);
+  margin: 0 0 6px;
+}
+
+.project-card span {
+  display: block;
+  margin-top: 18px;
+  color: #ff9966;
+  font-weight: bold;
+  font-size: clamp(12px, 1.3vw, 14px);
+}
+
+/* PROJECT EYEBROW */
+.project-eyebrow {
+  font-size: 11px;
+  letter-spacing: 4px;
+  opacity: 0.5;
+  margin: 0 0 12px;
+}
+
+/* DIRECTIONAL CARD TRANSITION */
+.project-card.dir-next {
+  animation: cardFromRight 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.project-card.dir-prev {
+  animation: cardFromLeft 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes cardFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(36px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes cardFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-36px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* CONTROLS */
+.controls {
+  margin-top: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.controls button {
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 120, 0, 0.15);
+  border: 1px solid rgba(255, 120, 0, 0.35);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.controls button:hover {
+  background: rgba(255, 120, 0, 0.35);
+  border-color: rgba(255, 160, 0, 0.7);
+}
+
+.project-count {
+  font-size: 13px;
+  letter-spacing: 2px;
+  opacity: 0.7;
+  min-width: 64px;
+}
+
+/* BACK BUTTON */
+.smithy-back {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  border: 1px solid #ff7a00;
+  padding: 12px 18px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.smithy-back:hover {
+  background: rgba(255, 120, 0, 0.15);
+}
+
+/* FOCUS */
+.controls button:focus-visible,
+.smithy-back:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 3px;
+}
+
+/* ANIMATIONS */
+@keyframes glowPulse {
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes anvilFloat {
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .anvil-wrapper {
+    top: 54%;
+  }
+
+  .fire-glow {
+    right: -15%;
+    bottom: -8%;
+  }
+
+  .controls button {
+    width: 46px;
+    height: 46px;
+  }
+}
+
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  .anvil {
+    animation: none;
+  }
+
+  .fire-glow {
+    animation: none;
+  }
+
+  .project-card.dir-next,
+  .project-card.dir-prev {
+    animation: fadeOnly 0.2s ease both;
+  }
+}
+
+@keyframes fadeOnly {
+  from {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,94 @@
+/* ============================================================
+   SWORD TRANSITION — cinematic gate between Room and Skills.
+   Sword descends, dialogue fades in, then the scene advances.
+   ============================================================ */
+
+.transition-bg {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ---------- SWORD ---------- */
+
+.sword-center {
+  width: clamp(120px, 18vw, 190px);
+  opacity: 0;
+  transform: translateY(50px) scale(0.8);
+  animation: swordEnter 1.2s ease forwards;
+  filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.15));
+}
+
+@keyframes swordEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------- DIALOGUE ---------- */
+
+.dialogue {
+  margin-top: 34px;
+  text-align: center;
+  color: white;
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: 1px;
+  opacity: 0;
+  animation: textFade 1.6s ease forwards;
+  padding: 0 24px;
+}
+
+.dialogue p {
+  margin: 8px 0;
+  font-size: clamp(14px, 1.8vw, 18px);
+}
+
+.dialogue p.fade-line {
+  opacity: 0;
+  animation: fadeLine 1.6s ease 1s forwards;
+}
+
+@keyframes textFade {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeLine {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------- CONTINUE HINT ---------- */
+
+.transition-hint {
+  position: absolute;
+  bottom: 7%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.4);
+  opacity: 0;
+  animation: textFade 1.2s ease 3.2s forwards;
+  user-select: none;
+}
+
+/* ---------- REDUCED MOTION ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .sword-center,
+  .dialogue,
+  .dialogue p.fade-line,
+  .transition-hint {
+    animation-duration: 0.01s;
+    animation-delay: 0s;
+  }
+}

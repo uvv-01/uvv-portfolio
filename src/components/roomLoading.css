@@ -1,0 +1,165 @@
+.glitch-bg {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #050505, black);
+  overflow: hidden;
+  font-family: monospace;
+  color: white;
+}
+
+/* CENTER LAYOUT */
+.glitch-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  text-align: center;
+}
+
+/* MAIN TITLE */
+.glitch-title {
+  font-size: 2.2rem;
+  letter-spacing: 4px;
+  position: relative;
+  animation: glitchShake 0.2s infinite;
+}
+
+/* RGB GLITCH LAYERS */
+.glitch-title::before,
+.glitch-title::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.glitch-title::before {
+  color: red;
+  transform: translateX(-3px);
+  animation: rgbRed 0.3s infinite;
+}
+
+.glitch-title::after {
+  color: cyan;
+  transform: translateX(3px);
+  animation: rgbBlue 0.25s infinite;
+}
+
+/* SUB TITLE */
+.glitch-sub {
+  margin-top: 15px;
+  font-size: 1rem;
+  opacity: 0.7;
+  letter-spacing: 2px;
+}
+
+/* STATUS BOX (GAME FEEL) */
+.status-box {
+  margin-top: 25px;
+  padding: 10px 20px;
+  border: 1px solid #333;
+  display: inline-block;
+  font-size: 0.9rem;
+  text-align: left;
+  animation: flicker 1.5s infinite;
+}
+
+.danger { color: red; }
+.warn { color: orange; }
+.ok { color: lightgreen; }
+
+/* SCANLINES */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.04),
+    rgba(255,255,255,0.04) 1px,
+    transparent 2px,
+    transparent 4px
+  );
+  animation: moveLines 0.4s linear infinite;
+}
+
+/* NOISE — layered CSS gradients, no external dependency */
+.noise {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 3px 3px, 5px 5px;
+  background-position: 0 0, 2px 3px;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  animation: noiseMove 0.15s infinite;
+}
+
+/* FLASH BURSTS */
+.flash {
+  position: absolute;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  animation: flashBurst 3s infinite;
+}
+
+/* VIGNETTE */
+.vignette {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 200px rgba(0,0,0,0.9);
+}
+
+/* ANIMATIONS */
+@keyframes glitchShake {
+  0% { transform: translate(0); }
+  10% { transform: translate(2px, -1px); }
+  20% { transform: translate(-2px, 1px); }
+  30% { transform: translate(2px, 1px); }
+  40% { transform: translate(-1px, -2px); }
+  50% { transform: translate(1px, 2px); }
+  60% { transform: translate(-2px, -1px); }
+  70% { transform: translate(2px, 0px); }
+  80% { transform: translate(-1px, 1px); }
+  90% { transform: translate(1px, -1px); }
+  100% { transform: translate(0); }
+}
+
+@keyframes rgbRed {
+  0% { transform: translate(-2px,0); }
+  50% { transform: translate(-4px,1px); }
+  100% { transform: translate(-2px,0); }
+}
+
+@keyframes rgbBlue {
+  0% { transform: translate(2px,0); }
+  50% { transform: translate(4px,-1px); }
+  100% { transform: translate(2px,0); }
+}
+
+@keyframes flicker {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes moveLines {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(6px); }
+}
+
+@keyframes noiseMove {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(-2px,2px); }
+  100% { transform: translate(2px,-2px); }
+}
+
+@keyframes flashBurst {
+  0% { opacity: 0; }
+  10% { opacity: 0.1; }
+  11% { opacity: 0; }
+  70% { opacity: 0; }
+  71% { opacity: 0.2; }
+  72% { opacity: 0; }
+}
