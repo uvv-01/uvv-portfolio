@@ -39,6 +39,7 @@ export default function SkillsScene({ goBack }) {
     const onKey = (e) => {
       if (e.key === "ArrowRight") changeIndex(1);
       else if (e.key === "ArrowLeft") changeIndex(-1);
+      else if (e.key === "Escape") goBack();
     };
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("keydown", onKey);
@@ -46,7 +47,7 @@ export default function SkillsScene({ goBack }) {
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKey);
     };
-  }, [changeIndex]);
+  }, [changeIndex, goBack]);
 
   const prev = mod(index - 1);
   const next = mod(index + 1);
@@ -86,12 +87,15 @@ export default function SkillsScene({ goBack }) {
       </div>
 
       <div className="arc-right-panel">
-        <div className="skill-text" key={index}>
+        <div className="skill-text" key={index} role="region" aria-live="polite">
           <p className="skill-eyebrow">
             SKILL {index + 1} / {COUNT}
           </p>
           <h1>{skills[index].name}</h1>
           <p className="skill-desc">{skills[index].desc}</p>
+          <p className="skill-use">
+            <span className="use-label">CRAFT &amp; APPLICATION:</span> {skills[index].use}
+          </p>
           <p className="line">{skills[index].line}</p>
         </div>
         <button type="button" className="back-btn" onClick={goBack}>

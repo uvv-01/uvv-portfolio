@@ -1,7 +1,7 @@
 import zoomImg from "../assets/images/zoom.jpeg";
 import "../index.css";
 
-export default function AboutScene({ onReturn }) {
+export default function AboutScene({ onReturn, goToRoom }) {
   return (
     <div
       className="about-scene"
@@ -44,9 +44,21 @@ export default function AboutScene({ onReturn }) {
           <li>Open Source Systems</li>
         </ul>
 
-        <button type="button" className="about-return fade-item delay7" onClick={onReturn}>
-          &#8592; Return
-        </button>
+        <div className="about-actions fade-item delay7" style={{ display: "flex", gap: "14px", marginTop: "20px" }}>
+          <button type="button" className="about-return" onClick={onReturn}>
+            &#8592; Back to Gate
+          </button>
+          {goToRoom && (
+            <button
+              type="button"
+              className="about-return"
+              onClick={goToRoom}
+              style={{ borderColor: "rgba(255, 140, 50, 0.6)", color: "#ffb366" }}
+            >
+              Enter the Workshop &#8594;
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

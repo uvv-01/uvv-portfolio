@@ -41,52 +41,66 @@ export default function EntryScene({ goToAbout, goToRoom }) {
       <button
         type="button"
         onClick={handleCharacterClick}
-        aria-label="Enter about"
+        aria-label="Enter about — Yuvraj Singh"
+        className="entry-hotspot warrior-hotspot"
         style={{
           position: "absolute",
-          top: "15%",
-          left: "56%",
-          width: "180px",
-          height: "230px",
+          top: "8%",
+          left: "50%",
+          width: "28%",
+          height: "46%",
           cursor: "pointer",
           zIndex: 10,
           background: "transparent",
           border: "none",
           padding: 0,
         }}
-      />
+      >
+        <span className="entry-tooltip" aria-hidden="true">
+          THE WARRIOR
+          <small>about yuvraj</small>
+        </span>
+      </button>
 
       <button
         type="button"
         onClick={handleSwordClick}
-        aria-label="Enter the world"
+        aria-label="Enter the workshop — forged weapons"
+        className="entry-hotspot sword-hotspot"
         style={{
           position: "absolute",
-          top: "50%",
-          left: "40%",
-          width: "120px",
-          height: "250px",
+          top: "44%",
+          left: "24%",
+          width: "32%",
+          height: "50%",
           cursor: "pointer",
           zIndex: 10,
           background: "transparent",
           border: "none",
           padding: 0,
         }}
-      />
+      >
+        <span className="entry-tooltip" aria-hidden="true">
+          THE DRAGONSLAYER
+          <small>enter the workshop</small>
+        </span>
+      </button>
 
       <div
         style={{
           position: "absolute",
-          bottom: "40px",
+          bottom: "32px",
           width: "100%",
           textAlign: "center",
-          color: "white",
-          opacity: 0.8,
-          letterSpacing: "1px",
-          fontSize: "14px",
+          color: "rgba(255, 244, 224, 0.85)",
+          letterSpacing: "2px",
+          fontSize: "13px",
+          pointerEvents: "none",
+          zIndex: 15,
+          textShadow: "0 2px 8px rgba(0,0,0,0.8)",
         }}
       >
-        Click the warrior or the sword
+        Select the <strong>Warrior</strong> to learn about Yuvraj, or the <strong>Sword</strong> to enter the Forge
       </div>
     </div>
   );

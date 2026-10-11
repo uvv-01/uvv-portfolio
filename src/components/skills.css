@@ -167,15 +167,34 @@
 .skill-desc {
   font-size: clamp(15px, 1.4vw, 18px);
   opacity: 0.85;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
+  color: #ffb366;
+}
+
+.skill-use {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(255, 244, 224, 0.85);
+}
+
+.use-label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #ff9944;
+  margin-bottom: 2px;
 }
 
 /* supporting line — styled via the pre-existing .line hook */
 .line {
-  margin-top: 18px;
-  opacity: 0.9;
+  margin-top: 14px;
+  opacity: 0.85;
   font-style: italic;
   font-size: clamp(13px, 1.2vw, 15px);
+  color: #d8c8b4;
+  border-left: 2px solid rgba(255, 140, 50, 0.4);
+  padding-left: 12px;
 }
 
 /* ---------- HINT + BACK ---------- */

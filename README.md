@@ -21,15 +21,23 @@ Built with React 19 + Vite.
   panels, and live GitHub counters fetched from the GitHub API
 - Journey Forge: cinematic ember-trail timeline of the developer journey
 - Three-slot sword arc for skills navigation (click, scroll, arrow keys)
-- Project Forge: each project is forged on screen — raw stock, heating,
-  two hammer strikes with sound, quenching, then the finished blade —
-  while project details are revealed in sync
-- Live GitHub integration (profile facts, repository metadata, update
-  dates) with graceful fallback when offline or rate-limited
-- Ambient music with an always-visible mute control; sound never blocks
-  navigation
-- Skip controls on cinematic sequences
-- Reduced-motion support in every stylesheet
+- Project Forge: authentic 7-stage forging sequence:
+  1. Raw Stock — unworked iron ingot resting across the anvil
+  2. Heating — drawn into the forge fire, glowing cherry red
+  3. First Strike — blacksmith hammer strikes with sound and spark burst
+  4. Shaping — metal yields under hammer blows into blade contours
+  5. Quenching — hardened in cold water with steam hiss
+  6. Polishing — edge honed, crossguard and pommel aligned
+  7. Reveal — weapon presented proudly while project dossier is unveiled
+- Top weapon rack selector allowing direct switching across 6 forged works
+- Fast skip action ("Skip to Blade") and re-forge action ("Strike & Re-forge")
+- Local note persistence: visitor reflections on the Scribe's Table are saved to `localStorage` (`uvv_scribe_note`)
+- Aspect-ratio locked workshop chamber (`1536 / 1024`) preventing hotspot drift across viewports
+- Clean transparent weapon assets with exact alpha channels contouring each blade
+- Live GitHub integration (profile facts, repository metadata, update dates) with graceful fallback
+- Ambient audio with an always-accessible toggle; audio never blocks navigation
+- Full keyboard navigation (arrow keys for swords and rack, Tab, Escape to return)
+- Reduced-motion accessibility support across all stylesheets
 
 ## Scene / Navigation Overview
 
@@ -50,11 +58,11 @@ Entry
 
 | Object | Scene | What it holds |
 |---|---|---|
-| Book + pen on the table | Contact Book | Contact links, writing area, pencil sound |
-| Badges on the wall | Trophy Wall | Achievements with detail panels; live GitHub numbers |
-| The fire | Journey Forge | Milestone timeline rendered as an ember trail |
-| The sword | Skills | Three-slot sword arc with directional transitions |
-| The anvil | Project Forge | Real repositories, forged into swords with a cinematic sequence |
+| Book + pen on the table | Contact Book | Contact links (GitHub, LinkedIn, Instagram, Email), persistent notepad, pencil audio |
+| Badges on the wall | Trophy Wall | Medallions for LeetCode (50/100 Days, Problem Solving), GSSoC, OpenVINO, Public Repos, Followers |
+| The fire | Journey Forge | Milestone timeline rendered as an ember trail from ECE foundation to open-source |
+| The sword | Skills | Three-slot sword carousel representing core engineering languages and stacks |
+| The anvil | Project Forge | 7-stage forging sequence showcasing 6 engineered repositories as forged blades |
 
 ## Data Layer
 

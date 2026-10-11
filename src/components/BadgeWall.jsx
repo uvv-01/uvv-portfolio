@@ -37,6 +37,17 @@ export default function BadgeWall({ goBack }) {
     };
   }, []);
 
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") {
+        if (selected) setSelected(null);
+        else goBack();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selected, goBack]);
+
   const liveValue = useCallback(
     (key) => {
       if (!gh) return "…";
@@ -59,7 +70,7 @@ export default function BadgeWall({ goBack }) {
 
       <ul className="wall-badges">
         {achievements.map((a, i) => (
-          <li key={a.id} className="badge-item" style={{ "--hang-delay": `${i * 0.35}s` }}>
+          <li key={a.id} className="badge-item" style={{ "--hang-delay": `${i * 0.08}s` }}>
             <button
               type="button"
               className="badge"

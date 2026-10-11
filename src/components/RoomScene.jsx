@@ -9,7 +9,8 @@ export default function RoomScene({
   goToSmithy,
 }) {
   return (
-    <div className="room-scene" style={{ backgroundImage: `url(${roomImg})` }}>
+    <div className="room-scene">
+      <div className="room-stage" style={{ backgroundImage: `url(${roomImg})` }}>
       {/* TABLE — book & pen: contacts + writing */}
       <button
         type="button"
@@ -74,6 +75,7 @@ export default function RoomScene({
           <small>projects</small>
         </span>
       </button>
+      </div>
     </div>
   );
 }

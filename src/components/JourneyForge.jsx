@@ -14,6 +14,14 @@ export default function JourneyForge({ goBack }) {
     };
   }, []);
 
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") goBack();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [goBack]);
+
   return (
     <div className="journey" role="dialog" aria-label="Developer journey">
       <div className="journey-bg" aria-hidden="true" />
@@ -40,7 +48,7 @@ export default function JourneyForge({ goBack }) {
             className={`trail-step ${m.kind === "current" ? "is-current" : ""} ${
               m.kind === "origin" ? "is-origin" : ""
             }`}
-            style={{ "--step-delay": `${0.25 + i * 0.22}s` }}
+            style={{ "--step-delay": `${0.05 + i * 0.08}s` }}
           >
             {i > 0 && <span className="trail-link" aria-hidden="true" />}
             <span className="trail-node" aria-hidden="true">

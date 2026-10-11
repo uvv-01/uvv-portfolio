@@ -17,7 +17,9 @@ import "./index.css";
 const AUDIO_SCENES = ["entry", "about"];
 
 export default function App() {
-  const [scene, setScene] = useState("entry");
+  const [scene, setScene] = useState(
+    () => new URLSearchParams(window.location.search).get("scene") || "entry"
+  );
   const [muted, setMuted] = useState(false);
   const audioRef = useRef(null);
 
@@ -54,7 +56,9 @@ export default function App() {
 
       {scene === "loading" && <LoadingScene onFinish={() => go("about")} />}
 
-      {scene === "about" && <AboutScene onReturn={() => go("entry")} />}
+      {scene === "about" && (
+        <AboutScene onReturn={() => go("entry")} goToRoom={() => go("roomLoading")} />
+      )}
 
       {scene === "roomLoading" && <RoomLoading onComplete={() => go("room")} />}
 

@@ -23,3 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
+# Local test artifacts and benchmark dumps
+nncf/
+*.png
+!src/assets/images/*.png
+!public/*.png

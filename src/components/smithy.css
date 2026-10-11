@@ -1,405 +1,690 @@
 /* ============================================================
-   SMITHY — an ancient sword-maker showcases his weapons.
-   Sword rack + cinematic forging sequence + synced reveal.
+   SMITHY — The Blacksmith's Forge (Cinematic Project Showcase)
    ============================================================ */
 
 .smithy {
   width: 100%;
   height: 100vh;
   height: 100dvh;
-
   background-image: url("../assets/images/smithy-bg.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-
   position: relative;
   overflow: hidden;
-  color: white;
+  color: #fff4e0;
+  font-family: "Poppins", sans-serif;
 }
 
 .smithy::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.75) 100%);
   z-index: 1;
 }
 
-/* FIRE GLOW */
-.fire-glow {
+/* ---------- WEAPON RACK AT TOP ---------- */
+.weapon-rack {
   position: absolute;
-  right: 8%;
-  bottom: 8%;
-  width: clamp(220px, 34vw, 460px);
-  height: clamp(220px, 34vw, 460px);
-  border-radius: 50%;
-  background: rgba(255, 100, 0, 0.3);
-  filter: blur(120px);
-  animation: glowPulse 3s ease-in-out infinite;
-  z-index: 2;
+  top: 14px;
+  right: 20px;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(12, 9, 6, 0.88);
+  border: 1px solid rgba(255, 140, 50, 0.35);
+  padding: 5px 14px;
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  max-width: calc(100vw - 220px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-/* FIRE IMAGE — screen-blended flame */
+.weapon-rack::-webkit-scrollbar {
+  display: none;
+}
+
+.rack-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #ff9944;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.rack-swords {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.rack-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(24, 18, 12, 0.8);
+  border: 1px solid rgba(255, 140, 50, 0.2);
+  color: rgba(255, 244, 224, 0.7);
+  padding: 4px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  transition: all 0.25s ease;
+}
+
+.rack-item:hover {
+  background: rgba(40, 26, 16, 0.9);
+  border-color: rgba(255, 160, 60, 0.6);
+  color: #fff4e0;
+}
+
+.rack-item.is-selected {
+  background: rgba(255, 120, 30, 0.22);
+  border-color: #ff9944;
+  color: #ffb366;
+  box-shadow: 0 0 10px rgba(255, 120, 30, 0.3);
+}
+
+.rack-sword-thumb {
+  width: 16px;
+  height: 22px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.8));
+}
+
+/* ---------- FIRE & AMBIENT GLOW ---------- */
+.fire-glow {
+  position: absolute;
+  right: 12%;
+  bottom: 12%;
+  width: clamp(280px, 34vw, 480px);
+  height: clamp(280px, 34vw, 480px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 100, 20, 0.35) 0%, rgba(200, 60, 10, 0.1) 50%, transparent 70%);
+  filter: blur(90px);
+  animation: forgePulse 3.5s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
 .forge-fire {
   position: absolute;
-  right: 6%;
-  bottom: 5%;
-  width: clamp(120px, 18vw, 220px);
-  opacity: 0.55;
+  right: 10%;
+  bottom: 8%;
+  width: clamp(140px, 18vw, 240px);
+  opacity: 0.7;
   mix-blend-mode: screen;
   z-index: 3;
-  animation: fireFlicker 2.2s infinite ease-in-out;
+  animation: fireFlicker 2.5s infinite ease-in-out;
+  pointer-events: none;
 }
 
 @keyframes fireFlicker {
-  0%, 100% { transform: scale(1); opacity: 0.55; }
-  30% { transform: scale(1.04); opacity: 0.65; }
-  60% { transform: scale(0.98); opacity: 0.5; }
+  0%, 100% { transform: scale(1) translateY(0); opacity: 0.7; }
+  35% { transform: scale(1.05) translateY(-3px); opacity: 0.8; }
+  70% { transform: scale(0.97) translateY(2px); opacity: 0.6; }
 }
 
-/* ---------- FORGE STAGE ---------- */
+@keyframes forgePulse {
+  0%, 100% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
 
+/* ---------- CENTRAL FORGE STAGE (OVER NATURAL ARTWORK ANVIL) ---------- */
 .forge-stage {
   position: absolute;
-  left: 50%;
-  top: 44%;
+  left: 47%;
+  top: 52%;
   transform: translate(-50%, -50%);
-  width: min(92vw, 620px);
-  z-index: 5;
+  width: min(36vw, 380px);
+  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.anvil-wrap {
-  width: clamp(110px, 16vw, 190px);
-  margin-bottom: -8px;
-  z-index: 1;
+/* BLACKSMITH HAMMER ANIMATION */
+.blacksmith-hammer-wrap {
+  position: absolute;
+  top: -100px;
+  left: 30%;
+  z-index: 15;
+  pointer-events: none;
+  animation: hammerSwing 0.5s cubic-bezier(0.85, 0, 0.15, 1) forwards;
 }
 
-.anvil {
-  width: 100%;
-  display: block;
-  filter: brightness(0.85);
+.blacksmith-hammer {
+  width: clamp(130px, 16vw, 200px);
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.95));
 }
 
-/* ---------- WORKPIECE (the sword being forged) ---------- */
+@keyframes hammerSwing {
+  0% { transform: translateY(-30px) rotate(-30deg); opacity: 0.85; }
+  60% { transform: translateY(35px) rotate(12deg); opacity: 1; }
+  100% { transform: translateY(15px) rotate(4deg); opacity: 0.9; }
+}
 
+/* ANVIL SPARKS BURST */
+.anvil-sparks {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  z-index: 16;
+  pointer-events: none;
+}
+
+.anvil-sparks span {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: #ffcc44;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #ff8800, 0 0 20px #ff3300;
+  animation: sparkBurst 0.4s ease-out forwards;
+}
+
+.anvil-sparks span:nth-child(1) { top: 50%; left: 50%; --dx: -45px; --dy: -40px; }
+.anvil-sparks span:nth-child(2) { top: 50%; left: 50%; --dx: 40px; --dy: -50px; }
+.anvil-sparks span:nth-child(3) { top: 50%; left: 50%; --dx: -30px; --dy: -25px; }
+.anvil-sparks span:nth-child(4) { top: 50%; left: 50%; --dx: 35px; --dy: -20px; }
+.anvil-sparks span:nth-child(5) { top: 50%; left: 50%; --dx: -10px; --dy: -60px; }
+.anvil-sparks span:nth-child(6) { top: 50%; left: 50%; --dx: 15px; --dy: -55px; }
+
+@keyframes sparkBurst {
+  0% { transform: translate(0, 0) scale(1.5); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+}
+
+/* ---------- THE WORKPIECE ---------- */
 .workpiece {
-  width: clamp(180px, 30vw, 340px);
-  margin-top: -34px;
-  z-index: 2;
+  width: clamp(170px, 22vw, 280px);
+  margin-top: 10px;
+  z-index: 5;
   transform-origin: 50% 88%;
-  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), filter 0.55s ease;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease;
 }
 
-.workpiece img {
+.workpiece-img {
   width: 100%;
   display: block;
-  filter: grayscale(1) brightness(0.55);
-  transition: filter 0.6s ease;
+  transition: all 0.6s ease;
 }
 
-/* phase: raw stock lying on the anvil */
-.workpiece.phase-raw {
-  transform: rotate(90deg) translateY(-14%) scale(0.9);
-  filter: brightness(0.6);
+/* STAGE 1 — RAW STOCK */
+.workpiece.stage-raw {
+  transform: rotate(90deg) translateY(-8%) scale(0.85);
+  filter: brightness(0.4) contrast(1.4) drop-shadow(0 6px 10px rgba(0,0,0,0.8));
+}
+.workpiece.stage-raw .workpiece-img {
+  filter: grayscale(1) brightness(0.35);
 }
 
-/* heating: lifted over the fire, warming up */
-.workpiece.phase-heating {
-  transform: rotate(24deg) translateY(-58%) scale(0.94);
-  filter: brightness(1.05) drop-shadow(0 0 22px rgba(255, 120, 30, 0.55));
+/* STAGE 2 — HEATING */
+.workpiece.stage-heating {
+  transform: rotate(35deg) translateY(-28%) scale(0.92);
+  filter: brightness(1.2) drop-shadow(0 0 28px rgba(255, 90, 20, 0.8));
+}
+.workpiece.stage-heating .workpiece-img {
+  filter: grayscale(0.5) sepia(0.85) hue-rotate(-22deg) saturate(3) brightness(1.2);
 }
 
-.workpiece.phase-heating img {
-  filter: grayscale(0.6) brightness(0.9) sepia(0.7) hue-rotate(-18deg) saturate(2.4);
+/* STAGE 3 — FIRST STRIKE */
+.workpiece.stage-strike1 {
+  transform: rotate(8deg) translateY(-6%) scale(0.98);
+  filter: brightness(1.4) drop-shadow(0 0 36px rgba(255, 160, 40, 0.9));
+}
+.workpiece.stage-strike1 .workpiece-img {
+  filter: grayscale(0.3) sepia(0.6) hue-rotate(-12deg) saturate(2.5) brightness(1.3);
 }
 
-/* strikes: hammer comes down, blade dips and rings */
-.workpiece.phase-strike1 {
-  transform: rotate(2deg) translateY(-6%) scale(1.02);
-  filter: brightness(1.35) drop-shadow(0 0 30px rgba(255, 170, 60, 0.7));
-  animation: strikeJolt 0.5s cubic-bezier(0.85, 0, 0.15, 1);
+/* STAGE 4 — SHAPING */
+.workpiece.stage-shaping {
+  transform: rotate(-4deg) translateY(-4%) scale(1.02);
+  filter: brightness(1.3) drop-shadow(0 0 30px rgba(255, 140, 30, 0.8));
+}
+.workpiece.stage-shaping .workpiece-img {
+  filter: grayscale(0.2) sepia(0.4) hue-rotate(-6deg) saturate(1.8) brightness(1.15);
 }
 
-.workpiece.phase-strike2 {
-  transform: rotate(-2deg) translateY(-4%) scale(1.05);
-  filter: brightness(1.45) drop-shadow(0 0 34px rgba(255, 180, 70, 0.8));
-  animation: strikeJolt 0.5s cubic-bezier(0.85, 0, 0.15, 1);
+/* STAGE 5 — QUENCHING */
+.workpiece.stage-quench {
+  transform: rotate(-10deg) translateY(12%) scale(0.96);
+  filter: brightness(0.85) drop-shadow(0 0 24px rgba(120, 190, 230, 0.6));
+}
+.workpiece.stage-quench .workpiece-img {
+  filter: grayscale(0.3) saturate(0.7) brightness(0.95);
 }
 
-@keyframes strikeJolt {
-  0% { transform: rotate(2deg) translateY(-6%) scale(1.02); }
-  35% { transform: rotate(7deg) translateY(4%) scale(1.06); }
-  60% { transform: rotate(4deg) translateY(1%) scale(1.04); }
-  100% { transform: rotate(2deg) translateY(-6%) scale(1.02); }
+/* STAGE 6 — POLISHING */
+.workpiece.stage-polish {
+  transform: rotate(0deg) translateY(-2%) scale(1.06);
+  filter: brightness(1.2) contrast(1.15) drop-shadow(0 0 20px rgba(255, 255, 255, 0.35));
+}
+.workpiece.stage-polish .workpiece-img {
+  filter: grayscale(0) brightness(1.1) contrast(1.15);
 }
 
-/* quenching: dipped down, steam-cool shift */
-.workpiece.phase-quench {
-  transform: rotate(-6deg) translateY(12%) scale(0.98);
-  filter: brightness(0.9) drop-shadow(0 0 16px rgba(140, 190, 220, 0.4));
+/* STAGE 7 — REVEAL / FINISH */
+.workpiece.stage-finish {
+  transform: rotate(0deg) translateY(-4%) scale(1.12);
+  filter: brightness(1.1) contrast(1.1) drop-shadow(0 14px 24px rgba(0, 0, 0, 0.9));
 }
-
-.workpiece.phase-quench img {
-  filter: grayscale(0.3) brightness(0.95) saturate(0.7);
-}
-
-/* finished blade: presented upright, full polish */
-.workpiece.phase-finish {
-  transform: rotate(0deg) translateY(-8%) scale(1.12);
-  filter: brightness(1.12) drop-shadow(0 14px 22px rgba(0, 0, 0, 0.55));
-}
-
-.workpiece.phase-finish img {
+.workpiece.stage-finish .workpiece-img {
   filter: grayscale(0) brightness(1.05) contrast(1.08);
 }
 
-/* ---------- MOTIF VARIATIONS (per-project blade identity) ---------- */
+.workpiece.impact-jolt {
+  animation: workpieceJolt 0.35s cubic-bezier(0.85, 0, 0.15, 1);
+}
 
-.workpiece.motif-b1 img { filter: hue-rotate(-8deg); }
-.workpiece.motif-b2 img { filter: hue-rotate(12deg); }
-.workpiece.motif-g1 img { transform: scaleX(-1); }
-.workpiece.motif-g2 img { transform: rotate(2deg) scale(1.02); }
+@keyframes workpieceJolt {
+  0% { transform: translateY(-4%) rotate(2deg) scale(1); }
+  40% { transform: translateY(6%) rotate(7deg) scale(1.05); }
+  100% { transform: translateY(-4%) rotate(2deg) scale(1); }
+}
 
-/* ---------- PHASE TRACK ---------- */
-
-.phase-track {
+/* STAGE TRACK */
+.stage-track {
   list-style: none;
   display: flex;
-  gap: clamp(8px, 2vw, 18px);
+  gap: 5px;
   padding: 0;
-  margin: 22px 0 0;
+  margin: 18px 0 0;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-.phase-track li {
-  font-size: clamp(9px, 1.2vw, 11px);
-  letter-spacing: 2px;
+.stage-track li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  letter-spacing: 1.2px;
   color: rgba(255, 255, 255, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 5px 10px 4px;
-  transition: color 0.4s ease, border-color 0.4s ease, background 0.4s ease;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 3px 7px 3px;
+  border-radius: 2px;
+  transition: all 0.3s ease;
 }
 
-.phase-track li.done {
-  color: rgba(255, 179, 71, 0.75);
-  border-color: rgba(255, 179, 71, 0.35);
+.stage-track li.done {
+  color: #ff9944;
+  border-color: rgba(255, 140, 50, 0.35);
 }
 
-.phase-track li.now {
-  color: #ffb347;
-  border-color: #ffb347;
-  background: rgba(255, 130, 40, 0.12);
-  box-shadow: 0 0 14px rgba(255, 130, 40, 0.25);
+.stage-track li.current {
+  color: #fff4e0;
+  border-color: #ffaa55;
+  background: rgba(255, 120, 30, 0.2);
+  box-shadow: 0 0 10px rgba(255, 120, 30, 0.3);
 }
 
-/* ---------- INFO PANEL (revealed with the blade) ---------- */
+.stage-step-num {
+  font-weight: 700;
+  color: #ff9944;
+}
 
+/* QUICK ACTIONS (SKIP / REFORGE) */
+.stage-quick-actions {
+  margin-top: 14px;
+}
+
+.quick-forge-btn {
+  background: rgba(20, 15, 10, 0.88);
+  border: 1px solid rgba(255, 140, 50, 0.4);
+  color: #ffb366;
+  font-size: 11.5px;
+  letter-spacing: 1.5px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.quick-forge-btn:hover {
+  background: rgba(255, 120, 30, 0.25);
+  border-color: #ffaa55;
+  color: #fff4e0;
+}
+
+.quick-forge-btn.reforge {
+  color: rgba(255, 200, 140, 0.85);
+}
+
+/* ---------- PROJECT INFORMATION PANEL (LEFT WALL) ---------- */
 .forge-info {
   position: absolute;
-  left: 50%;
-  bottom: 4%;
-  transform: translateX(-50%) translateY(24px);
-  width: min(94vw, 660px);
-  background: rgba(8, 6, 5, 0.82);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 120, 0, 0.3);
-  padding: clamp(16px, 3vw, 26px) clamp(18px, 3vw, 30px);
-  text-align: center;
+  left: 3%;
+  top: 50%;
+  transform: translateY(-50%) translateX(-24px);
+  width: min(38vw, 500px);
+  max-height: 84vh;
+  overflow-y: auto;
+  background: rgba(14, 11, 8, 0.93);
+  border: 1px solid rgba(255, 140, 40, 0.35);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+  padding: clamp(18px, 2.2vw, 26px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.7s ease 0.1s, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+  transition: opacity 0.55s ease 0.1s, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+  z-index: 20;
 }
 
 .forge-info.revealed {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(-50%) translateX(0);
   pointer-events: auto;
 }
 
-.forge-info h1 {
-  margin: 0 0 10px;
-  color: #ffb347;
-  font-size: clamp(20px, 3vw, 34px);
+.info-header {
+  border-bottom: 1px solid rgba(255, 140, 50, 0.2);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
 }
 
 .project-eyebrow {
-  font-size: 10.5px;
-  letter-spacing: 4px;
-  opacity: 0.5;
-  margin: 0 0 8px;
-}
-
-.project-desc {
-  margin: 0 0 8px;
-  font-size: clamp(13px, 1.5vw, 15.5px);
-  line-height: 1.6;
+  margin: 0 0 5px;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  color: #ff9944;
   opacity: 0.9;
 }
 
-.project-tech {
-  display: block;
-  color: #ff9966;
-  font-weight: 600;
-  font-size: clamp(11.5px, 1.3vw, 13.5px);
-  margin-bottom: 6px;
+.project-title {
+  margin: 0 0 4px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(20px, 2.5vw, 28px);
+  color: #fff4e0;
+  letter-spacing: 1px;
 }
 
-.project-live {
-  font-size: 11.5px;
-  color: rgba(120, 200, 130, 0.8);
-  margin: 4px 0 0;
+.project-weapon-name {
+  margin: 0;
+  font-size: 12.5px;
+  color: #ffb366;
+  opacity: 0.9;
+}
+
+.project-weapon-name em {
+  font-style: normal;
+  font-weight: 600;
+  color: #ffcc77;
+}
+
+/* TECH CHIPS */
+.project-tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.tech-chip {
+  background: rgba(255, 120, 30, 0.12);
+  border: 1px solid rgba(255, 140, 50, 0.25);
+  color: #ffb366;
+  font-size: 10.5px;
+  padding: 3px 7px;
+  border-radius: 2px;
+  letter-spacing: 0.5px;
+}
+
+/* INFO SECTIONS */
+.info-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.info-block h3 {
+  margin: 0 0 3px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ffaa55;
+  opacity: 0.9;
+}
+
+.info-block p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: rgba(255, 244, 224, 0.85);
 }
 
 .project-highlights {
   list-style: none;
   padding: 0;
-  margin: 10px 0 0;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.project-highlights li {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255, 244, 224, 0.8);
+  position: relative;
+  padding-left: 14px;
 }
 
 .project-highlights li::before {
-  content: "— ";
-  color: rgba(255, 150, 60, 0.7);
+  content: "◆";
+  position: absolute;
+  left: 0;
+  color: #ff9944;
+  font-size: 7px;
+  top: 4px;
+}
+
+.project-live {
+  font-size: 10.5px;
+  color: #78c882;
+  margin: 0 0 14px;
+}
+
+/* FOOTER ACTIONS */
+.project-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 140, 50, 0.2);
+  padding-top: 12px;
 }
 
 .project-links {
-  margin-top: 12px;
   display: flex;
-  gap: 18px;
-  justify-content: center;
+  gap: 10px;
 }
 
-.project-links a {
-  color: #ffb347;
-  font-size: 13px;
-  letter-spacing: 0.5px;
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  letter-spacing: 0.8px;
+  padding: 6px 12px;
   text-decoration: none;
-  border-bottom: 1px solid rgba(255, 179, 71, 0.35);
-  padding-bottom: 2px;
+  border-radius: 2px;
+  transition: all 0.25s ease;
 }
 
-.project-links a:hover {
-  border-bottom-color: #ffb347;
+.btn-link.repo {
+  background: rgba(255, 120, 30, 0.15);
+  border: 1px solid rgba(255, 140, 50, 0.4);
+  color: #ffb366;
 }
 
-/* ---------- CONTROLS ---------- */
+.btn-link.repo:hover {
+  background: rgba(255, 120, 30, 0.3);
+  border-color: #ffaa55;
+  color: #fff4e0;
+}
 
-.controls {
-  margin-top: 16px;
+.btn-link.live {
+  background: rgba(120, 200, 130, 0.15);
+  border: 1px solid rgba(120, 200, 130, 0.4);
+  color: #90ee90;
+}
+
+.btn-link.live:hover {
+  background: rgba(120, 200, 130, 0.3);
+  border-color: #90ee90;
+  color: #ffffff;
+}
+
+.project-pager {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  gap: 6px;
 }
 
-.controls button {
-  width: 46px;
-  height: 46px;
-  background: rgba(255, 120, 0, 0.15);
-  border: 1px solid rgba(255, 120, 0, 0.35);
-  color: white;
-  font-size: 15px;
+.project-pager button {
+  background: rgba(255, 120, 30, 0.12);
+  border: 1px solid rgba(255, 140, 50, 0.3);
+  color: #fff4e0;
+  font-size: 11px;
+  padding: 5px 8px;
   cursor: pointer;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition: all 0.25s ease;
 }
 
-.controls button:hover {
-  background: rgba(255, 120, 0, 0.35);
-  border-color: rgba(255, 160, 0, 0.7);
+.project-pager button:hover {
+  background: rgba(255, 120, 30, 0.3);
+  border-color: #ffaa55;
 }
 
-.project-count {
-  font-size: 12.5px;
-  letter-spacing: 2px;
+.pager-count {
+  font-size: 11.5px;
+  letter-spacing: 1px;
   opacity: 0.7;
-  min-width: 56px;
 }
 
-/* ---------- BACK ---------- */
-
+/* BACK TO CHAMBER BUTTON */
 .smithy-back {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 20;
-  background: rgba(0, 0, 0, 0.75);
-  color: white;
-  border: 1px solid #ff7a00;
-  padding: 11px 18px;
-  font-size: 13.5px;
-  letter-spacing: 1px;
+  top: 14px;
+  left: 18px;
+  z-index: 30;
+  background: rgba(12, 9, 6, 0.88);
+  color: #fff4e0;
+  border: 1px solid rgba(255, 140, 50, 0.4);
+  padding: 7px 14px;
+  font-size: 11.5px;
+  letter-spacing: 1.2px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 .smithy-back:hover {
-  background: rgba(255, 120, 0, 0.15);
+  background: rgba(255, 120, 30, 0.25);
+  border-color: #ffaa55;
 }
 
-/* ---------- FOCUS ---------- */
+/* ---------- RESPONSIVE BREAKPOINTS ---------- */
+@media (max-width: 1024px) {
+  .weapon-rack {
+    top: 56px;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 96vw;
+  }
 
-.controls button:focus-visible,
-.smithy-back:focus-visible,
-.project-links a:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.8);
-  outline-offset: 3px;
-}
-
-/* ---------- ANIMATIONS ---------- */
-
-@keyframes glowPulse {
-  50% { transform: scale(1.1); }
-}
-
-/* ---------- RESPONSIVE ---------- */
-
-@media (max-width: 640px) {
   .forge-stage {
-    top: 36%;
+    left: 50%;
+    top: 34%;
+    width: min(88vw, 380px);
   }
 
   .forge-info {
-    bottom: 2.5%;
-    max-height: 52vh;
-    overflow-y: auto;
+    left: 50%;
+    right: auto;
+    top: auto;
+    bottom: 2%;
+    transform: translateX(-50%) translateY(20px);
+    width: min(94vw, 560px);
+    max-height: 48vh;
   }
 
-  .phase-track {
-    gap: 6px;
+  .forge-info.revealed {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .rack-title {
+    display: none;
   }
 
-  .phase-track li {
-    padding: 4px 7px 3px;
-    letter-spacing: 1px;
+  .weapon-rack {
+    top: 52px;
+    padding: 3px 6px;
   }
 
-  .forge-fire {
-    width: 90px;
-    right: 4%;
+  .rack-item {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .workpiece {
+    width: clamp(110px, 28vw, 150px);
+    margin-top: 4px;
+  }
+
+  .forge-stage {
+    top: 26%;
+  }
+
+  .stage-track {
+    gap: 3px;
+  }
+
+  .stage-track li {
+    padding: 2px 5px;
+    font-size: 9px;
+  }
+
+  .stage-step-label {
+    display: none;
+  }
+
+  .forge-info {
+    bottom: 1%;
+    max-height: 54vh;
+    padding: 14px 14px 48px;
+  }
+
+  .project-title {
+    font-size: 18px;
   }
 }
 
 /* ---------- REDUCED MOTION ---------- */
-
 @media (prefers-reduced-motion: reduce) {
   .fire-glow,
-  .forge-fire {
+  .forge-fire,
+  .blacksmith-hammer-wrap,
+  .workpiece.impact-jolt,
+  .anvil-sparks span {
     animation: none;
   }
 
   .workpiece,
-  .workpiece img {
+  .workpiece-img,
+  .forge-info {
     transition: none;
-  }
-
-  .workpiece.phase-strike1,
-  .workpiece.phase-strike2 {
-    animation: none;
   }
 }
