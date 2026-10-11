@@ -89,7 +89,7 @@ export default function SkillsScene({ goBack }) {
       <div className="arc-right-panel">
         <div className="skill-text" key={index} role="region" aria-live="polite">
           <p className="skill-eyebrow">
-            SKILL {index + 1} / {COUNT}
+            WEAPON OF CRAFT {index + 1} OF {COUNT} &bull; SKILLS AS WEAPONS
           </p>
           <h1>{skills[index].name}</h1>
           <p className="skill-desc">{skills[index].desc}</p>
@@ -97,6 +97,9 @@ export default function SkillsScene({ goBack }) {
             <span className="use-label">CRAFT &amp; APPLICATION:</span> {skills[index].use}
           </p>
           <p className="line">{skills[index].line}</p>
+          <p className="skill-forge-hint">
+            <em>These blades represent tools mastered — carried into the forge to build real systems.</em>
+          </p>
         </div>
         <button type="button" className="back-btn" onClick={goBack}>
           &#8592; Return to Chamber

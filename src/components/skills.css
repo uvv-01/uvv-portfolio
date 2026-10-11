@@ -197,6 +197,14 @@
   padding-left: 12px;
 }
 
+.skill-forge-hint {
+  margin-top: 14px;
+  font-size: 11px;
+  color: #ff9944;
+  opacity: 0.75;
+  letter-spacing: 0.6px;
+}
+
 /* ---------- HINT + BACK ---------- */
 
 .arc-hint {

@@ -54,26 +54,50 @@ export default function ContactBook({ goBack }) {
       return "";
     }
   });
-  const audioRef = useRef(null);
 
+  const audioRef = useRef(null);
+  const audioTimeoutRef = useRef(null);
+
+  // Audio lifecycle: instantiate once and GUARANTEE clean stop on unmount
   useEffect(() => {
-    if (!ContactBook._audio) {
-      ContactBook._audio = new Audio(pencilSound);
-      ContactBook._audio.volume = 0.4;
-    }
-    audioRef.current = ContactBook._audio;
+    const audio = new Audio(pencilSound);
+    audio.volume = 0.35;
+    audioRef.current = audio;
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+      if (audioTimeoutRef.current) {
+        clearTimeout(audioTimeoutRef.current);
+      }
+    };
   }, []);
 
-  const scratch = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.currentTime = 0.4;
-    audio.play().catch(() => {});
+  // Safe debounced pencil audio feedback while typing
+  const playPencilScratch = useCallback(() => {
+    const a = audioRef.current;
+    if (!a) return;
+    try {
+      if (a.paused || a.currentTime > 1.2) {
+        a.currentTime = 0.2;
+        a.play().catch(() => {});
+      }
+      if (audioTimeoutRef.current) clearTimeout(audioTimeoutRef.current);
+      audioTimeoutRef.current = setTimeout(() => {
+        if (audioRef.current) audioRef.current.pause();
+      }, 350);
+    } catch (err) {
+      void err;
+    }
   }, []);
 
   const handleNoteChange = (e) => {
     const val = e.target.value;
     setNote(val);
+    playPencilScratch();
     try {
       localStorage.setItem("uvv_scribe_note", val);
     } catch (err) {
@@ -90,81 +114,106 @@ export default function ContactBook({ goBack }) {
     }
   };
 
+  const handleExit = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    goBack();
+  }, [goBack]);
+
+  // Clean keyboard listener
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === "Escape") goBack();
+      if (e.key === "Escape") handleExit();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [goBack]);
+  }, [handleExit]);
 
   return (
-    <div className="contact-book" role="dialog" aria-label="Contact notebook">
-      <div className="book-bg" aria-hidden="true" />
+    <div className="scribe-desk-scene" role="dialog" aria-label="The Scribe's Table — Contacts and Notes">
+      <div className="desk-backdrop" aria-hidden="true" />
 
-      <div className="book-page">
-        <header className="book-head">
-          <h1>The Scribe&apos;s Table</h1>
-          <p className="book-sub">Leave a mark, or find me across the realms.</p>
+      {/* The Open Journal Artifact */}
+      <article className="scribe-journal">
+        <header className="journal-header">
+          <div className="journal-seal" aria-hidden="true">⚜</div>
+          <h1 className="journal-title">The Scribe&apos;s Table</h1>
+          <p className="journal-subtitle">Leave a mark upon this realm, or find me across the outer world.</p>
         </header>
 
-        <ul className="book-contacts">
-          {profile.contacts
-            .filter((c) => c.url)
-            .map((c) => (
-              <li key={c.id}>
-                <a href={c.url} target="_blank" rel="noreferrer" className="contact-link">
-                  <span className="contact-icon" aria-hidden="true">
+        {/* Embossed Contact Cards */}
+        <section className="journal-section" aria-label="Developer channels">
+          <div className="contacts-grid">
+            {profile.contacts
+              .filter((c) => c.url)
+              .map((c) => (
+                <a
+                  key={c.id}
+                  href={c.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="contact-card"
+                  aria-label={`${c.label}: ${c.value || c.url}`}
+                >
+                  <span className="card-icon" aria-hidden="true">
                     {ICONS[c.id]}
                   </span>
-                  <span className="contact-label">{c.label}</span>
-                  <span className="contact-arrow" aria-hidden="true">
-                    &#8599;
-                  </span>
+                  <div className="card-info">
+                    <span className="card-label">{c.label}</span>
+                    <span className="card-val">{c.value || "Connect"}</span>
+                  </div>
+                  <span className="card-arrow" aria-hidden="true">&#8599;</span>
                 </a>
-              </li>
-            ))}
-        </ul>
+              ))}
+          </div>
+        </section>
 
-        <div className="book-writing">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-            <label className="book-label" htmlFor="scribe-note" style={{ margin: 0 }}>
-              Write in the book
+        {/* Working Scribe Note / Parchment Area */}
+        <section className="journal-section writing-area" aria-label="Parchment note area">
+          <div className="writing-header">
+            <label htmlFor="scribe-parchment-input" className="writing-label">
+              Inscribe a Note
             </label>
             {note && (
               <button
                 type="button"
                 onClick={clearNote}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "#c8412f",
-                  fontSize: "11px",
-                  cursor: "pointer",
-                  letterSpacing: "1px",
-                  padding: "2px 6px",
-                }}
+                className="clear-note-btn"
+                aria-label="Clear handwritten note"
               >
-                Clear note &times;
+                Clear Ink &times;
               </button>
             )}
           </div>
-          <textarea
-            id="scribe-note"
-            value={note}
-            onChange={handleNoteChange}
-            onKeyDown={scratch}
-            placeholder="Your notes stay in this world (saved locally). They are never sent to external servers."
-            rows={5}
-            spellCheck="false"
-          />
-          <span className="book-pen" aria-hidden="true" />
-        </div>
 
-        <button type="button" className="book-back" onClick={goBack}>
-          &#8592; Return to the Workshop
-        </button>
-      </div>
+          <div className="parchment-textarea-wrap">
+            <textarea
+              id="scribe-parchment-input"
+              value={note}
+              onChange={handleNoteChange}
+              placeholder="Your inscriptions are saved in local memory. They remain here across visits..."
+              rows={4}
+              spellCheck="false"
+              className="parchment-input"
+            />
+            <div className="quill-indicator" aria-hidden="true" />
+          </div>
+        </section>
+
+        {/* Clean Return Button */}
+        <footer className="journal-footer">
+          <button
+            type="button"
+            className="journal-return-btn"
+            onClick={handleExit}
+            aria-label="Close journal and return to workshop chamber"
+          >
+            &#8592; Return to Workshop
+          </button>
+        </footer>
+      </article>
     </div>
   );
 }

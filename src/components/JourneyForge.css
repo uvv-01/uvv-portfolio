@@ -1,327 +1,542 @@
 /* ============================================================
-   JOURNEY FORGE — the fire remembers.
-   Ember trail timeline with metal milestone cards.
+   DEVELOPER JOURNEY — Playable Memory Progression
+   Scroll & key-driven environmental storytelling across 5 Acts
    ============================================================ */
 
-.journey {
+.journey-world {
   position: fixed;
   inset: 0;
-  overflow-y: auto;
-  z-index: 40;
-  padding: 26px 18px 40px;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background: #090706;
+  color: #fff4e0;
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.8s ease;
+  user-select: none;
 }
 
-/* forge-dark backdrop with heat from below */
-.journey-bg {
-  position: fixed;
+/* Atmospheric Hue Transitions Across Acts */
+.journey-world.act-1 {
+  background: radial-gradient(circle at 50% 45%, #181210 0%, #070505 100%);
+}
+
+.journey-world.act-2 {
+  background: radial-gradient(circle at 50% 45%, #24140c 0%, #0a0705 100%);
+}
+
+.journey-world.act-3 {
+  background: radial-gradient(circle at 50% 45%, #2b170e 0%, #0c0806 100%);
+}
+
+.journey-world.act-4 {
+  background: radial-gradient(circle at 50% 45%, #1d1424 0%, #08060d 100%);
+}
+
+.journey-world.act-5 {
+  background: radial-gradient(circle at 50% 45%, #361b0d 0%, #0d0704 100%);
+}
+
+/* Parallax Layer 1: Ambient Cavern Walls */
+.world-cavern-backdrop {
+  position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 50% 115%, rgba(255, 110, 30, 0.16), transparent 55%),
-    radial-gradient(ellipse at 15% -10%, rgba(120, 60, 20, 0.10), transparent 50%),
-    linear-gradient(180deg, #100c09 0%, #16100b 60%, #1c120a 100%);
-  animation: jFade 0.7s ease both;
-}
-
-@keyframes jFade {
-  from { opacity: 0; }
-}
-
-/* rising embers */
-.journey-embers {
-  position: fixed;
-  inset: 0;
+    radial-gradient(ellipse at 50% 100%, rgba(255, 120, 40, 0.08) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
   pointer-events: none;
-  overflow: hidden;
 }
 
-.journey-embers span {
+/* Parallax Layer 2: Centerpiece Hearth Flame */
+.world-hearth-flame {
   position: absolute;
-  bottom: -12px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #ffb347;
-  box-shadow: 0 0 10px 2px rgba(255, 130, 40, 0.55);
-  opacity: 0;
-  animation: emberRise 9s linear infinite;
+  top: 36%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 220px;
+  height: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 5;
 }
 
-.journey-embers span:nth-child(1) { left: 8%;  animation-delay: 0s;   animation-duration: 8.4s; }
-.journey-embers span:nth-child(2) { left: 22%; animation-delay: 2.2s; animation-duration: 10s;  }
-.journey-embers span:nth-child(3) { left: 37%; animation-delay: 4.1s; animation-duration: 8.8s; }
-.journey-embers span:nth-child(4) { left: 55%; animation-delay: 1.3s; animation-duration: 9.6s; }
-.journey-embers span:nth-child(5) { left: 68%; animation-delay: 5.4s; animation-duration: 8.2s; }
-.journey-embers span:nth-child(6) { left: 81%; animation-delay: 3.3s; animation-duration: 9.2s; }
-.journey-embers span:nth-child(7) { left: 93%; animation-delay: 6.6s; animation-duration: 8.6s; }
-
-@keyframes emberRise {
-  0% {
-    transform: translateY(0) translateX(0) scale(0.8);
-    opacity: 0;
-  }
-  12% {
-    opacity: 0.9;
-  }
-  85% {
-    opacity: 0.5;
-  }
-  100% {
-    transform: translateY(-105vh) translateX(14px) scale(1.15);
-    opacity: 0;
-  }
-}
-
-/* ---------- HEADER ---------- */
-
-.journey-head {
-  text-align: center;
-  margin: 6px auto 26px;
-  max-width: 620px;
-}
-
-.journey-flame {
+.flame-body {
   position: relative;
-  width: 54px;
-  height: 54px;
-  margin: 0 auto 14px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .flame-core {
+  width: 40px;
+  height: 60px;
+  background: radial-gradient(ellipse at 50% 80%, #ffffff 0%, #ffcc44 40%, #ff4400 80%, transparent 100%);
+  border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+  filter: blur(4px);
+  animation: coreDance 1.8s infinite ease-in-out;
+}
+
+.flame-ember-halo {
   position: absolute;
-  inset: 12px;
-  background: radial-gradient(circle at 50% 70%, #ffd98a 0%, #ff9a3d 45%, #e2551f 80%);
-  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
-  filter: blur(0.5px);
-  animation: flameDance 1.6s ease-in-out infinite;
-  transform-origin: bottom center;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 120, 20, 0.3) 0%, rgba(200, 50, 10, 0.1) 60%, transparent 100%);
+  filter: blur(25px);
 }
 
-.flame-halo {
+@keyframes coreDance {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.1) translateY(-4px); }
+}
+
+/* Flame Intensities */
+.world-hearth-flame.intensity-low .flame-core { opacity: 0.6; filter: blur(6px); }
+.world-hearth-flame.intensity-medium .flame-core { opacity: 0.8; filter: blur(3px); }
+.world-hearth-flame.intensity-high .flame-core { opacity: 0.95; filter: blur(2px); }
+.world-hearth-flame.intensity-radiant .flame-core { opacity: 1; filter: blur(2px) drop-shadow(0 0 20px #ff6600); }
+.world-hearth-flame.intensity-master .flame-core { opacity: 1; filter: blur(1px) drop-shadow(0 0 35px #ffaa22); }
+
+/* Drifting Embers */
+.journey-embers-field {
   position: absolute;
-  inset: -14px;
-  background: radial-gradient(circle, rgba(255, 140, 50, 0.28), transparent 65%);
-  animation: flameDance 1.6s ease-in-out infinite reverse;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
 }
 
-@keyframes flameDance {
-  0%, 100% { transform: scaleY(1) scaleX(1); }
-  30% { transform: scaleY(1.14) scaleX(0.94); }
-  60% { transform: scaleY(0.92) scaleX(1.05); }
+.emb {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #ffaa33;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #ff6600;
+  animation: emberRise 5s infinite linear;
 }
 
-.journey-head h1 {
-  font-family: Georgia, serif;
-  font-size: clamp(21px, 3.6vw, 32px);
-  letter-spacing: 3px;
-  color: #e8d7ac;
-  margin: 0 0 8px;
-  text-shadow: 0 0 26px rgba(255, 130, 40, 0.25);
+.e1 { left: 45%; bottom: 15%; animation-duration: 4.2s; animation-delay: 0s; }
+.e2 { left: 52%; bottom: 10%; animation-duration: 5.1s; animation-delay: 1.2s; }
+.e3 { left: 48%; bottom: 20%; animation-duration: 3.8s; animation-delay: 2.1s; }
+.e4 { left: 42%; bottom: 12%; animation-duration: 4.8s; animation-delay: 0.8s; }
+.e5 { left: 56%; bottom: 18%; animation-duration: 4.5s; animation-delay: 2.7s; }
+.e6 { left: 50%; bottom: 25%; animation-duration: 3.5s; animation-delay: 1.9s; }
+
+@keyframes emberRise {
+  0% { transform: translateY(0) scale(1); opacity: 0.8; }
+  100% { transform: translateY(-380px) translateX(25px) scale(0.2); opacity: 0; }
 }
 
-.journey-sub {
-  color: rgba(232, 215, 172, 0.55);
-  font-size: clamp(12.5px, 1.6vw, 14px);
+/* Parallax Layer 3: Chapter Arena */
+.chapter-arena {
+  position: relative;
+  z-index: 10;
+  width: min(92vw, 580px);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 20px;
+  box-sizing: border-box;
+}
+
+/* Header & Act Landmark */
+.chapter-landmark {
+  margin-bottom: 8px;
+}
+
+.act-badge {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  color: #ff9944;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+
+.chapter-title {
+  margin: 0 0 4px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(24px, 3.8vw, 34px);
+  color: #fff4e0;
+  letter-spacing: 0.8px;
+}
+
+.chapter-subtitle {
   margin: 0;
+  font-size: 12.5px;
+  color: #ffb366;
+  opacity: 0.85;
 }
 
-/* ---------- TRAIL ---------- */
+/* Environmental World Artifact Displays */
+.world-artifact-display {
+  width: 100%;
+  height: clamp(80px, 14vh, 120px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+}
 
-.journey-trail {
-  list-style: none;
-  margin: 0 auto;
-  padding: 0;
-  max-width: 560px;
+/* Spark Circuit */
+.artifact-spark {
   position: relative;
-  z-index: 1;
+  width: 80px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.trail-step {
-  --step-delay: 0s;
+.spark-node {
+  width: 10px;
+  height: 10px;
+  background: #ffcc44;
+  border-radius: 50%;
+  box-shadow: 0 0 16px #ff8800;
+}
+
+.circuit-lines .cline {
+  position: absolute;
+  height: 1px;
+  background: rgba(255, 180, 80, 0.4);
+}
+.circuit-lines .c1 { width: 35px; left: 0; top: 30px; }
+.circuit-lines .c2 { width: 35px; right: 0; top: 30px; }
+
+/* Crucible Tablet */
+.stone-tablet {
+  display: flex;
+  gap: 12px;
+  padding: 8px 16px;
+  background: rgba(30, 22, 16, 0.8);
+  border: 1px solid rgba(255, 140, 50, 0.25);
+  border-radius: 4px;
+}
+
+.rune {
+  font-family: monospace;
+  font-size: 13px;
+  color: #ffaa55;
+  letter-spacing: 1px;
+}
+
+/* Inventions Monolith */
+.device-monolith {
   position: relative;
-  display: grid;
-  grid-template-columns: 34px 1fr;
-  gap: 16px;
-  padding-bottom: 26px;
-  animation: stepIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: var(--step-delay);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 140, 50, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-@keyframes stepIn {
+.lens-ring {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 160, 60, 0.25);
+  box-shadow: 0 0 12px #ff8800;
+}
+
+/* Network Constellation */
+.constellation {
+  position: relative;
+  width: 90px;
+  height: 60px;
+}
+
+.hub-star {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: #ffaa44;
+  border-radius: 50%;
+  box-shadow: 0 0 14px #ff6600;
+}
+
+.satellite-star {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #ffe099;
+  border-radius: 50%;
+}
+.satellite-star.s1 { top: 10px; left: 15px; }
+.satellite-star.s2 { bottom: 10px; left: 20px; }
+.satellite-star.s3 { top: 20px; right: 15px; }
+
+/* Master Blade */
+.blade-monolith {
+  width: 6px;
+  height: 65px;
+  background: linear-gradient(180deg, #ffffff 0%, #ffbb44 60%, #cc3300 100%);
+  border-radius: 2px 2px 0 0;
+  box-shadow: 0 0 20px #ff9922;
+  animation: bladePulse 2.5s infinite ease-in-out;
+}
+
+@keyframes bladePulse {
+  0%, 100% { filter: drop-shadow(0 0 15px #ff8800); }
+  50% { filter: drop-shadow(0 0 30px #ffbb44); }
+}
+
+/* Milestone Card */
+.milestone-card {
+  background: rgba(16, 12, 9, 0.88);
+  border: 1px solid rgba(255, 140, 50, 0.3);
+  backdrop-filter: blur(12px);
+  border-radius: 4px;
+  padding: clamp(16px, 2.5vw, 24px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  width: 100%;
+  box-sizing: border-box;
+  animation: cardFadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes cardFadeIn {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* connecting ember trail */
-.trail-link {
-  position: absolute;
-  left: 16px;
-  top: 34px;
-  bottom: -4px;
-  width: 2px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 140, 50, 0.55),
-    rgba(255, 140, 50, 0.12)
-  );
-  box-shadow: 0 0 8px rgba(255, 130, 40, 0.25);
+.card-milestone-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 120, 30, 0.14);
+  border: 1px solid rgba(255, 140, 50, 0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
 }
 
-/* milestone node on the trail */
-.trail-node {
+.pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff9944;
+  box-shadow: 0 0 6px #ff6600;
+}
+
+.pill-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffcc88;
+  letter-spacing: 0.5px;
+}
+
+.milestone-narrative {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: rgba(255, 244, 224, 0.88);
+}
+
+.milestone-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 140, 50, 0.2);
+  padding-top: 10px;
+  font-size: 11px;
+  color: rgba(255, 244, 224, 0.6);
+}
+
+.meta-tag {
+  color: #ffaa55;
+  letter-spacing: 0.8px;
+}
+
+.meta-repo-count {
+  color: #78c882;
+}
+
+/* Quick Progression Controls */
+.chapter-nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.act-btn {
+  background: rgba(20, 15, 10, 0.85);
+  border: 1px solid rgba(255, 140, 50, 0.35);
+  color: #ffb366;
+  font-size: 11.5px;
+  letter-spacing: 1px;
+  padding: 6px 16px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.act-btn:hover:not(:disabled) {
+  background: rgba(255, 120, 30, 0.25);
+  border-color: #ffaa55;
+  color: #fff;
+}
+
+.act-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.act-indicator {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: rgba(255, 244, 224, 0.7);
+}
+
+/* Timeline Scrubber Rail */
+.timeline-rail {
+  position: absolute;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 25;
+}
+
+.rail-notch {
   position: relative;
-  width: 34px;
-  height: 34px;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.node-core {
-  width: 14px;
-  height: 14px;
+.notch-dot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffd98a, #e2551f 70%);
-  box-shadow: 0 0 14px 3px rgba(255, 120, 35, 0.45);
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 140, 50, 0.2);
+  transition: all 0.3s ease;
 }
 
-/* origin milestone: cool metal, not yet hot */
-.is-origin .node-core {
-  background: radial-gradient(circle at 35% 30%, #b9c2c9, #6d777e 70%);
-  box-shadow: 0 0 10px 2px rgba(150, 165, 175, 0.3);
+.rail-notch:hover .notch-dot {
+  background: #ff9944;
+  transform: scale(1.3);
 }
 
-/* current milestone: burning bright */
-.is-current .node-core {
-  width: 18px;
-  height: 18px;
-  background: radial-gradient(circle at 35% 30%, #fff3d0, #ff9a3d 65%);
-  box-shadow: 0 0 22px 6px rgba(255, 140, 45, 0.6);
-  animation: corePulse 2s ease-in-out infinite;
+.rail-notch.is-past .notch-dot {
+  background: rgba(255, 140, 50, 0.5);
 }
 
-@keyframes corePulse {
-  50% { transform: scale(1.25); }
+.rail-notch.is-active .notch-dot {
+  background: #ffaa33;
+  box-shadow: 0 0 10px #ff6600;
+  transform: scale(1.5);
 }
 
-/* ---------- MILESTONE CARDS ---------- */
-
-.trail-card {
-  background: linear-gradient(160deg, rgba(40, 32, 22, 0.92), rgba(26, 20, 13, 0.92));
-  border: 1px solid rgba(180, 140, 70, 0.28);
-  border-left: 3px solid rgba(255, 150, 60, 0.55);
-  padding: 16px 18px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
-}
-
-.is-origin .trail-card {
-  border-left-color: rgba(150, 165, 175, 0.5);
-}
-
-.is-current .trail-card {
-  border: 1px solid rgba(255, 160, 60, 0.55);
-  border-left: 3px solid #ff9a3d;
-  box-shadow:
-    0 14px 36px rgba(0, 0, 0, 0.5),
-    0 0 30px rgba(255, 120, 35, 0.18);
-}
-
-.trail-card h2 {
-  font-family: Georgia, serif;
-  color: #e8d7ac;
-  font-size: clamp(16px, 2.4vw, 20px);
-  margin: 0 0 4px;
-}
-
-.trail-long {
-  color: rgba(232, 215, 172, 0.55);
-  font-size: 12px;
-  letter-spacing: 1px;
-  margin: 0 0 8px;
-}
-
-.trail-detail {
-  color: rgba(232, 215, 172, 0.82);
-  font-size: 13.5px;
-  line-height: 1.6;
-  margin: 0;
-}
-
-.trail-pending {
-  font-style: italic;
-  opacity: 0.55;
-}
-
-/* heat shimmer under the current card */
-.trail-heat {
+.notch-tooltip {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -10px;
-  height: 10px;
-  background: radial-gradient(ellipse at center, rgba(255, 120, 35, 0.25), transparent 70%);
-  filter: blur(4px);
-}
-
-/* ---------- RETURN ---------- */
-
-.journey-back {
-  display: block;
-  margin: 10px auto 20px;
-  padding: 11px 20px;
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(180, 140, 70, 0.4);
-  color: #e8d7ac;
-  font-size: 13px;
+  right: 26px;
+  white-space: nowrap;
+  font-size: 11px;
   letter-spacing: 1px;
+  background: rgba(12, 9, 6, 0.9);
+  border: 1px solid rgba(255, 140, 50, 0.3);
+  padding: 4px 10px;
+  border-radius: 2px;
+  color: #ffcc88;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(6px);
+  transition: all 0.2s ease;
+}
+
+.rail-notch:hover .notch-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Leave / Return Button */
+.journey-leave-btn {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  background: rgba(18, 14, 10, 0.85);
+  border: 1px solid rgba(255, 140, 50, 0.35);
+  color: #ffb366;
+  font-size: 11.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 2px;
   cursor: pointer;
-  transition: border-color 0.3s ease, background 0.3s ease;
-  z-index: 1;
-  position: relative;
+  z-index: 30;
+  transition: all 0.25s ease;
 }
 
-.journey-back:hover {
-  border-color: #ffb347;
-  background: rgba(255, 150, 60, 0.08);
+.journey-leave-btn:hover {
+  background: rgba(36, 26, 18, 0.95);
+  border-color: #ff9944;
+  color: #fff4e0;
+  box-shadow: 0 0 12px rgba(255, 140, 50, 0.3);
 }
 
-/* ---------- FOCUS ---------- */
+/* ============================================================
+   RESPONSIVE DESIGN
+   ============================================================ */
 
-.journey-back:focus-visible {
-  outline: 2px solid rgba(255, 200, 120, 0.85);
-  outline-offset: 3px;
-}
-
-/* ---------- RESPONSIVE ---------- */
-
-@media (max-width: 480px) {
-  .trail-step {
-    grid-template-columns: 26px 1fr;
-    gap: 12px;
+@media (max-width: 768px) {
+  .timeline-rail {
+    display: none;
   }
 
-  .trail-link {
-    left: 12px;
+  .chapter-arena {
+    padding: 12px 14px;
   }
 
-  .trail-node {
-    width: 26px;
-    height: 26px;
+  .chapter-title {
+    font-size: 22px;
+  }
+
+  .milestone-narrative {
+    font-size: 12.5px;
+  }
+
+  .world-artifact-display {
+    height: 70px;
   }
 }
 
-/* ---------- REDUCED MOTION ---------- */
-
+/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .journey-embers span,
   .flame-core,
-  .flame-halo,
-  .is-current .node-core {
+  .emb,
+  .blade-monolith,
+  .milestone-card {
     animation: none;
-  }
-
-  .trail-step {
-    animation: none;
+    transition: none;
   }
 }

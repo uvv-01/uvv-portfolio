@@ -294,6 +294,18 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
+@media (max-width: 820px) {
+  .sound-toggle {
+    bottom: auto;
+    top: 12px;
+    right: 12px;
+    left: auto;
+    padding: 6px 10px;
+    font-size: 10px;
+    z-index: 60;
+  }
+}
+
 /* ============================================================
    REDUCED MOTION — global catch-all for staged fades
    ============================================================ */

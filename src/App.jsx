@@ -67,8 +67,8 @@ export default function App() {
           goToBook={() => go("book")}
           goToWall={() => go("wall")}
           goToJourney={() => go("journey")}
-          goToSkills={() => go("swordTransition")}
-          goToSmithy={() => go("smithloading")}
+          goToSkills={() => go("skills")}
+          goToSmithy={() => go("smithy")}
         />
       )}
 
