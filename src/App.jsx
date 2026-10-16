@@ -51,13 +51,13 @@ export default function App() {
   return (
     <div className="app-root">
       {scene === "entry" && (
-        <EntryScene goToAbout={() => go("loading")} goToRoom={() => go("roomLoading")} />
+        <EntryScene goToAbout={() => go("about")} goToRoom={() => go("room")} />
       )}
 
       {scene === "loading" && <LoadingScene onFinish={() => go("about")} />}
 
       {scene === "about" && (
-        <AboutScene onReturn={() => go("entry")} goToRoom={() => go("roomLoading")} />
+        <AboutScene onReturn={() => go("entry")} goToRoom={() => go("room")} />
       )}
 
       {scene === "roomLoading" && <RoomLoading onComplete={() => go("room")} />}

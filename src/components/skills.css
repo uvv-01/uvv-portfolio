@@ -1,43 +1,48 @@
 /* ============================================================
-   SKILLS — three-slot sword arc
-   Center = active skill. Sides = previews. No circle, no 3D.
-   Directional movement is keyframe-driven from a mount/class
-   change, so rapid input can never wedge a half-finished state.
+   SKILLS — THREE-SLOT SWORD ARMORY
+   Consistent craftsmanship style, desaturated steel,
+   and direct SKILL -> PROJECT -> EVIDENCE integration.
    ============================================================ */
 
 .skills-container {
   width: 100%;
   height: 100vh;
   height: 100dvh;
-  background: black;
+  background: radial-gradient(circle at 35% 50%, #15110d 0%, #0a0806 60%, #050403 100%);
   display: flex;
-  color: white;
+  color: #fff2dd;
   overflow: hidden;
   position: relative;
+  font-family: "Poppins", sans-serif;
 }
 
 .arc-left {
-  width: 58%;
+  width: 56%;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .arc-right-panel {
-  width: 42%;
+  width: 44%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(24px, 4vw, 60px);
-  background: rgba(0, 0, 0, 0.7);
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  padding: clamp(24px, 4vw, 56px);
+  background: rgba(10, 8, 6, 0.88);
+  border-left: 1px solid rgba(220, 140, 60, 0.2);
+  backdrop-filter: blur(12px);
+  overflow-y: auto;
 }
 
-/* ---------- SWORD SLOTS (rest positions) ---------- */
+/* ---------- SWORD SLOTS (Rest Positions) ---------- */
 
 .sword-slot {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: clamp(120px, 14vw, 200px);
+  width: clamp(120px, 14vw, 210px);
   border: none;
   background: none;
   padding: 0;
@@ -45,16 +50,19 @@
   will-change: transform, opacity, filter;
 }
 
-.sword-slot img {
+/* Consistent craftsmanship: desaturated, weathered dark steel finish */
+.armory-blade-img {
   width: 100%;
   height: auto;
   display: block;
   pointer-events: none;
+  filter: grayscale(0.68) contrast(1.22) brightness(0.9) drop-shadow(0 14px 28px rgba(0, 0, 0, 0.98));
+  transition: filter 0.3s ease;
 }
 
 .sword-slot.left {
   transform: translate(-185%, -50%) scale(0.8) rotate(-10deg);
-  opacity: 0.3;
+  opacity: 0.28;
   filter: blur(1.5px);
 }
 
@@ -68,22 +76,17 @@
 
 .sword-slot.right {
   transform: translate(85%, -50%) scale(0.8) rotate(10deg);
-  opacity: 0.3;
+  opacity: 0.28;
   filter: blur(1.5px);
 }
 
-/* side hover: offer the next move */
 .sword-slot.left:hover,
 .sword-slot.right:hover {
-  filter: blur(0.5px) drop-shadow(0 0 18px rgba(255, 255, 255, 0.35));
+  filter: blur(0.5px) drop-shadow(0 0 16px rgba(220, 140, 60, 0.3));
   opacity: 0.55;
-  transition: filter 0.25s ease, opacity 0.25s ease;
 }
 
-/* ---------- DIRECTIONAL TRANSITIONS (keyframes) ---------- */
-/* Forward: incoming enters from the right edge, old left exits far-left,
-   old center settles into the left slot. Backward is the mirror. */
-
+/* ---------- DIRECTIONAL TRANSITIONS ---------- */
 @keyframes enterFromRight {
   from {
     transform: translate(160%, -50%) scale(0.65) rotate(14deg);
@@ -117,34 +120,34 @@
 }
 
 .sword-slot.enter-from-right {
-  animation: enterFromRight 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: enterFromRight 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) both;
 }
 .sword-slot.enter-from-left {
-  animation: enterFromLeft 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: enterFromLeft 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) both;
 }
 .sword-slot.was-center {
-  animation: settleFromCenter 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: settleFromCenter 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) both;
 }
 .sword-slot.was-center-right {
-  animation: settleFromCenter 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: settleFromCenter 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) both;
 }
 .sword-slot.exit-far-left {
-  animation: exitFarLeft 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: exitFarLeft 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) both;
 }
 .sword-slot.exit-far-right {
-  animation: exitFarRight 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: exitFarRight 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) both;
 }
 
-/* ---------- TEXT PANEL ---------- */
+/* ---------- TEXT & EVIDENCE PANEL ---------- */
 
 .skill-text {
-  animation: panelIn 0.55s ease both;
+  animation: panelIn 0.45s ease both;
 }
 
 @keyframes panelIn {
   from {
     opacity: 0;
-    transform: translateX(24px);
+    transform: translateX(18px);
   }
   to {
     opacity: 1;
@@ -153,95 +156,140 @@
 }
 
 .skill-eyebrow {
-  font-size: 12px;
-  letter-spacing: 4px;
-  opacity: 0.5;
-  margin: 0 0 14px;
+  font-size: 10.5px;
+  letter-spacing: 3px;
+  color: #df8838;
+  margin: 0 0 10px;
+  text-transform: uppercase;
 }
 
-.arc-right-panel h1 {
-  font-size: clamp(26px, 3.2vw, 38px);
-  margin: 0 0 16px;
+.skill-name {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(24px, 2.8vw, 36px);
+  margin: 0 0 10px;
+  color: #fff2dd;
+  letter-spacing: 0.8px;
 }
 
 .skill-desc {
-  font-size: clamp(15px, 1.4vw, 18px);
-  opacity: 0.85;
-  margin: 0 0 10px;
-  color: #ffb366;
+  font-size: clamp(14px, 1.3vw, 16px);
+  margin: 0 0 12px;
+  color: #f0b06a;
 }
 
 .skill-use {
   margin: 10px 0 0;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: rgba(255, 244, 224, 0.85);
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(245, 235, 220, 0.88);
 }
 
 .use-label {
   display: block;
-  font-size: 10px;
+  font-size: 9.5px;
   letter-spacing: 2px;
-  color: #ff9944;
+  color: #df8838;
   margin-bottom: 2px;
+  font-weight: 600;
 }
 
-/* supporting line — styled via the pre-existing .line hook */
 .line {
-  margin-top: 14px;
-  opacity: 0.85;
-  font-style: italic;
-  font-size: clamp(13px, 1.2vw, 15px);
-  color: #d8c8b4;
-  border-left: 2px solid rgba(255, 140, 50, 0.4);
+  margin-top: 12px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: rgba(230, 215, 195, 0.75);
+  border-left: 2px solid rgba(220, 140, 60, 0.4);
   padding-left: 12px;
 }
 
-.skill-forge-hint {
-  margin-top: 14px;
-  font-size: 11px;
-  color: #ff9944;
-  opacity: 0.75;
-  letter-spacing: 0.6px;
+/* ---------- DIRECT EVIDENCE CARD ---------- */
+.skill-evidence-card {
+  margin-top: 18px;
+  padding: 12px 16px;
+  background: rgba(18, 14, 10, 0.85);
+  border: 1px solid rgba(220, 140, 60, 0.25);
+  border-radius: 3px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
 }
 
-/* ---------- HINT + BACK ---------- */
+.evidence-badge {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #78c882;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
 
+.evidence-project {
+  margin: 0 0 4px;
+  font-size: 12.5px;
+  color: #fff2dd;
+}
+
+.evidence-project strong {
+  color: #f0b06a;
+}
+
+.evidence-note {
+  margin: 0 0 8px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: rgba(230, 215, 195, 0.75);
+}
+
+.evidence-link {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #78c882;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.evidence-link:hover {
+  color: #a6e6ae;
+  text-decoration: underline;
+}
+
+.skill-forge-hint {
+  margin-top: 16px;
+  font-size: 11px;
+  color: rgba(220, 140, 60, 0.75);
+  letter-spacing: 0.5px;
+}
+
+/* ---------- CONTROLS & BACK BUTTON ---------- */
 .arc-hint {
   position: absolute;
   bottom: 18px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 11px;
-  letter-spacing: 3px;
-  opacity: 0.35;
+  font-size: 10.5px;
+  letter-spacing: 2.5px;
+  color: rgba(220, 205, 185, 0.4);
   user-select: none;
 }
 
 .back-btn {
-  margin-top: 40px;
+  margin-top: 24px;
   align-self: flex-start;
-  padding: 12px 24px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  font-size: 14px;
-  letter-spacing: 1px;
+  padding: 10px 20px;
+  background: rgba(18, 14, 10, 0.85);
+  border: 1px solid rgba(220, 140, 60, 0.35);
+  color: #f0b06a;
+  font-size: 12px;
+  letter-spacing: 1.5px;
   cursor: pointer;
-  transition: border-color 0.3s ease, background 0.3s ease;
+  border-radius: 2px;
+  transition: all 0.25s ease;
 }
 
-.back-btn:hover {
-  border-color: white;
-  background: rgba(255, 255, 255, 0.06);
-}
-
-/* ---------- FOCUS ---------- */
-
-.sword-slot:focus-visible,
+.back-btn:hover,
 .back-btn:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.8);
-  outline-offset: 4px;
+  border-color: #ff9944;
+  background: rgba(35, 25, 17, 0.95);
+  color: #fff4e0;
 }
 
 /* ---------- RESPONSIVE ---------- */
@@ -253,25 +301,24 @@
 
   .arc-left {
     width: 100%;
-    flex: 1 1 55%;
+    flex: 1 1 50%;
     min-height: 0;
   }
 
   .arc-right-panel {
     width: 100%;
-    flex: 1 1 45%;
+    flex: 1 1 50%;
     border-left: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    justify-content: flex-start;
-    padding-top: 18px;
+    border-top: 1px solid rgba(220, 140, 60, 0.2);
+    padding: 20px 20px 32px;
   }
 
   .back-btn {
-    margin-top: 18px;
+    margin-top: 16px;
   }
 
   .arc-hint {
-    bottom: 10px;
+    bottom: 8px;
   }
 }
 
@@ -284,7 +331,7 @@
   .sword-slot.was-center-right,
   .sword-slot.exit-far-left,
   .sword-slot.exit-far-right {
-    animation: fadeOnly 0.25s ease both;
+    animation: fadeOnly 0.2s ease both;
   }
 
   .skill-text {

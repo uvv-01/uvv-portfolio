@@ -1,0 +1,263 @@
+/* ============================================================
+   ENTRY SCENE — DARKNESS BEFORE REVELATION
+   Near-black charcoal atmosphere. A solitary monumental blade
+   in low raking light. Camera enters the reflective steel to
+   reveal the workshop chamber.
+   ============================================================ */
+
+.entry-universe {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background: #060504;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+}
+
+/* Atmospheric vignette and deep soot grain */
+.entry-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(22, 16, 12, 0.4) 0%,
+    rgba(10, 8, 6, 0.85) 60%,
+    #050403 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Faint ambient hearth ember warmth in the deep distance */
+.entry-hearth-dust {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 60%,
+    rgba(180, 70, 20, 0.08) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* The Sword Focal Stage */
+.entry-blade-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+  will-change: transform, opacity;
+}
+
+/* Transition state: camera enters the steel */
+.entry-blade-stage.is-entering {
+  transform: scale(3.8) translateY(12%);
+  opacity: 0;
+}
+
+.entry-blade-wrapper {
+  position: relative;
+  height: min(72vh, 640px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* The monumental blade */
+.entry-blade-img {
+  height: 100%;
+  width: auto;
+  max-width: 90vw;
+  object-fit: contain;
+  filter: grayscale(0.85) contrast(1.25) brightness(0.8) drop-shadow(0 10px 30px rgba(0, 0, 0, 0.95));
+  transition: filter 0.5s ease;
+}
+
+.entry-blade-wrapper:hover .entry-blade-img,
+.entry-blade-wrapper:focus-visible .entry-blade-img {
+  filter: grayscale(0.7) contrast(1.3) brightness(0.92) drop-shadow(0 12px 35px rgba(200, 100, 30, 0.25));
+}
+
+/* Raking light reflection gliding along the steel edge */
+.blade-glint-sweep {
+  position: absolute;
+  top: 10%;
+  left: 46%;
+  width: 8%;
+  height: 70%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.02) 20%,
+    rgba(255, 220, 180, 0.28) 50%,
+    rgba(255, 255, 255, 0.02) 80%,
+    transparent 100%
+  );
+  filter: blur(3px);
+  pointer-events: none;
+  animation: glintTravel 5s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes glintTravel {
+  0% {
+    transform: translateY(-40%) scaleY(0.6);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.85;
+  }
+  60% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(40%) scaleY(1.1);
+    opacity: 0;
+  }
+}
+
+/* Subtle iron micro-scratch overlay that becomes visible on close-up */
+.steel-reflection-pass {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 40%,
+    rgba(255, 140, 50, 0.06) 50%,
+    transparent 60%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.is-entering .steel-reflection-pass {
+  opacity: 1;
+}
+
+/* Full-frame darkness wipe passing across the transition */
+.entry-darkness-wipe {
+  position: absolute;
+  inset: 0;
+  background: #060504;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+  transition: opacity 0.6s ease;
+}
+
+.entry-darkness-wipe.is-wiping {
+  opacity: 1;
+}
+
+/* Understated, atmospheric controls */
+.entry-narrative {
+  position: absolute;
+  bottom: clamp(24px, 5vh, 48px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+  text-align: center;
+  pointer-events: auto;
+  transition: opacity 0.4s ease;
+}
+
+.is-entering ~ .entry-narrative {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.entry-presence-title {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(14px, 1.4vw, 17px);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(230, 215, 195, 0.65);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+}
+
+.entry-presence-sub {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: rgba(200, 185, 165, 0.4);
+}
+
+.entry-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.entry-enter-btn {
+  background: rgba(18, 14, 11, 0.85);
+  border: 1px solid rgba(220, 140, 60, 0.45);
+  color: #f0c896;
+  font-size: 11.5px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 10px 22px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.8);
+}
+
+.entry-enter-btn:hover,
+.entry-enter-btn:focus-visible {
+  border-color: rgba(240, 160, 80, 0.85);
+  background: rgba(28, 20, 14, 0.95);
+  color: #fff0d4;
+  box-shadow: 0 6px 24px rgba(220, 120, 40, 0.25);
+}
+
+.entry-chronicle-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(220, 210, 195, 0.55);
+  font-size: 10.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.entry-chronicle-btn:hover,
+.entry-chronicle-btn:focus-visible {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .blade-glint-sweep {
+    animation: none;
+    opacity: 0.4;
+  }
+  .entry-blade-stage.is-entering {
+    transition: opacity 0.2s ease;
+    transform: none;
+  }
+}

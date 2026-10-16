@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import "./JourneyForge.css";
-import { fetchGithubProfile } from "../utils/github.js";
 
 const CHAPTERS = [
   {
@@ -10,8 +9,7 @@ const CHAPTERS = [
     subtitle: "Electronics & Physics Foundation",
     milestone: "Arya College of Engineering • B.Tech ECE",
     desc: "In semiconductor physics, circuit architectures, and digital logic gates, the initial spark was struck. Before high-level software, there was an understanding of how electrons move through silicon.",
-    visual: "spark",
-    flameScale: 0.35,
+    flameScale: 0.45,
     flameIntensity: "low",
     tag: "Hardware & Logic Core",
   },
@@ -19,11 +17,10 @@ const CHAPTERS = [
     id: "crucible",
     act: "ACT II",
     title: "Crucible of Logic",
-    subtitle: "Algorithmic Rigor & Languages",
+    subtitle: "Algorithmic Rigor & Data Structures",
     milestone: "Data Structures • C++ • Java • LeetCode 100+",
     desc: "The flame gained heat through rigorous algorithmic discipline. Implementing core trees, graphs, and memory-safe structures from scratch, solving 100+ competitive programming challenges to forge intuition.",
-    visual: "crucible",
-    flameScale: 0.6,
+    flameScale: 0.7,
     flameIntensity: "medium",
     tag: "Algorithmic Discipline",
   },
@@ -34,8 +31,7 @@ const CHAPTERS = [
     subtitle: "Autonomous Agents & Vision Systems",
     milestone: "Pengu Voice Assistant • Face Detection Auto-Switch",
     desc: "The workshop took shape. Code turned into physical agency: local-first desktop automation with Faster Whisper, and multithreaded computer vision pipelines dynamically migrating across CPU/GPU targets.",
-    visual: "tools",
-    flameScale: 0.85,
+    flameScale: 0.95,
     flameIntensity: "high",
     tag: "Applied Engineering",
   },
@@ -46,8 +42,7 @@ const CHAPTERS = [
     subtitle: "Collaborative Open Source",
     milestone: "Intel OpenVINO • GSSoC • OSS Navigator",
     desc: "Stepping beyond solitary craft into the global open source commons. Contributing diagnostic tools to Intel OpenVINO, building benchmark telemetry dashboards with Next.js and FastAPI, and shipping pull requests for public repositories.",
-    visual: "network",
-    flameScale: 1.1,
+    flameScale: 1.15,
     flameIntensity: "radiant",
     tag: "Global Collaboration",
   },
@@ -56,9 +51,8 @@ const CHAPTERS = [
     act: "ACT V",
     title: "The Living Frontier",
     subtitle: "Edge AI & Selective Inference",
-    milestone: "FoveaEdge • Next-Gen Research • Berserk Workshop",
+    milestone: "FoveaEdge • Active Research • Berserk Workshop",
     desc: "The master forge stands ablaze. Active research into human foveated vision for edge devices (FoveaEdge) to save compute without sacrificing accuracy. Crafting intelligent systems where software meets edge silicon.",
-    visual: "blaze",
     flameScale: 1.35,
     flameIntensity: "master",
     tag: "Current Mastery",
@@ -67,18 +61,9 @@ const CHAPTERS = [
 
 export default function JourneyForge({ goBack }) {
   const [current, setCurrent] = useState(0);
-  const [gh, setGh] = useState(null);
   const containerRef = useRef(null);
   const touchStartY = useRef(0);
   const lockRef = useRef(false);
-
-  useEffect(() => {
-    let alive = true;
-    fetchGithubProfile().then((p) => alive && setGh(p));
-    return () => {
-      alive = false;
-    };
-  }, []);
 
   const goToChapter = useCallback((idx) => {
     if (lockRef.current) return;
@@ -88,7 +73,7 @@ export default function JourneyForge({ goBack }) {
     setCurrent(bounded);
     setTimeout(() => {
       lockRef.current = false;
-    }, 600);
+    }, 450);
   }, [current]);
 
   const nextChapter = useCallback(() => {
@@ -101,7 +86,7 @@ export default function JourneyForge({ goBack }) {
 
   // Wheel listener with throttle
   const handleWheel = useCallback((e) => {
-    if (Math.abs(e.deltaY) < 25 || lockRef.current) return;
+    if (Math.abs(e.deltaY) < 20 || lockRef.current) return;
     if (e.deltaY > 0) nextChapter();
     else prevChapter();
   }, [nextChapter, prevChapter]);
@@ -162,17 +147,7 @@ export default function JourneyForge({ goBack }) {
         </div>
       </div>
 
-      {/* Floating Memory Embers */}
-      <div className="journey-embers-field" aria-hidden="true">
-        <span className="emb e1" />
-        <span className="emb e2" />
-        <span className="emb e3" />
-        <span className="emb e4" />
-        <span className="emb e5" />
-        <span className="emb e6" />
-      </div>
-
-      {/* Parallax Depth Layer 3: Cinematic Milestone Stage */}
+      {/* Milestone Stage */}
       <main className="chapter-arena">
         {/* Top Header & Act Landmark */}
         <header className="chapter-landmark">
@@ -180,57 +155,6 @@ export default function JourneyForge({ goBack }) {
           <h1 className="chapter-title">{ch.title}</h1>
           <p className="chapter-subtitle">{ch.subtitle}</p>
         </header>
-
-        {/* Environmental World Artifact Display */}
-        <div className="world-artifact-display" aria-hidden="true">
-          {current === 0 && (
-            <div className="artifact-spark">
-              <span className="spark-node" />
-              <div className="circuit-lines">
-                <span className="cline c1" />
-                <span className="cline c2" />
-              </div>
-            </div>
-          )}
-
-          {current === 1 && (
-            <div className="artifact-crucible">
-              <div className="stone-tablet">
-                <span className="rune r1">&#123; &#125;</span>
-                <span className="rune r2">O(N)</span>
-                <span className="rune r3">&amp;ptr</span>
-              </div>
-            </div>
-          )}
-
-          {current === 2 && (
-            <div className="artifact-inventions">
-              <div className="device-monolith">
-                <span className="lens-ring" />
-                <span className="sound-wave" />
-              </div>
-            </div>
-          )}
-
-          {current === 3 && (
-            <div className="artifact-network">
-              <div className="constellation">
-                <span className="hub-star" />
-                <span className="satellite-star s1" />
-                <span className="satellite-star s2" />
-                <span className="satellite-star s3" />
-              </div>
-            </div>
-          )}
-
-          {current === 4 && (
-            <div className="artifact-master-blade">
-              <div className="master-forge-glow">
-                <span className="blade-monolith" />
-              </div>
-            </div>
-          )}
-        </div>
 
         {/* Milestone Narrative Card */}
         <article className="milestone-card" key={ch.id}>
@@ -243,15 +167,10 @@ export default function JourneyForge({ goBack }) {
 
           <footer className="milestone-meta">
             <span className="meta-tag">{ch.tag}</span>
-            {gh && current === 3 && (
-              <span className="meta-repo-count">
-                &#9679; {gh.public_repos} Public Repositories Tracked
-              </span>
-            )}
           </footer>
         </article>
 
-        {/* Quick Progression Controls */}
+        {/* Progression Controls */}
         <nav className="chapter-nav-bar" aria-label="Journey navigation">
           <button
             type="button"

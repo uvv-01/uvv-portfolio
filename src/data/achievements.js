@@ -1,70 +1,77 @@
 // ---------------------------------------------------------------
 // Achievement badges for the workshop wall.
-// Sources: achievements explicitly supplied by the owner, plus
-// verifiable public GitHub profile facts (numbers fetched live in
-// src/utils/github.js).
-// Nothing is invented. `detail` placeholders await owner copy.
+// Curated, authentic physical records.
+// Explicitly categorized: Personal Milestone, Contribution, Participation, Academic.
+// Never represents participation as winning or follower counts as awards.
 // ---------------------------------------------------------------
 
 const achievements = [
   {
-    id: "lc-50",
-    title: "LeetCode 50 Days",
-    subtitle: "50-day consistency badge",
-    detail:
-      "Completed 50 days of continuous problem solving on LeetCode, tackling core patterns in dynamic programming, binary search, and data structures.",
-    source: "https://leetcode.com",
-  },
-  {
     id: "lc-100",
+    category: "Personal Milestone",
     title: "LeetCode 100 Days",
-    subtitle: "100-day century milestone",
+    subtitle: "Century Consistency Milestone",
     detail:
-      "Century milestone in daily algorithmic problem solving, building deep intuition for time and space complexity tradeoffs.",
+      "Century milestone in daily algorithmic problem solving, building intuition for time and space complexity tradeoffs across dynamic programming, trees, and graphs.",
+    verification: "Verified Milestone on LeetCode",
     source: "https://leetcode.com",
+    monogram: "100",
   },
   {
-    id: "active-pi",
-    title: "Active Problem Solving",
-    subtitle: "Continuous practice & contests",
+    id: "lc-50",
+    category: "Personal Milestone",
+    title: "LeetCode 50 Days",
+    subtitle: "Daily Habit Milestone",
     detail:
-      "Regular practice solving data structure and algorithm challenges across C++, Java, and competitive coding environments.",
-    source: "https://github.com/uvv-01/arya_college_training",
-  },
-  {
-    id: "gssoc",
-    title: "GSSoC",
-    title_long: "GirlScript Summer of Code",
-    subtitle: "Open-source contributor",
-    detail:
-      "Collaborative open-source program participant, contributing bug fixes, documentation, and feature enhancements to community codebases.",
-    source: "https://github.com/uvv-01",
+      "Completed 50 consecutive days of continuous problem solving on LeetCode, tackling core patterns in binary search, recursion, and data structures.",
+    verification: "Verified Milestone on LeetCode",
+    source: "https://leetcode.com",
+    monogram: "50",
   },
   {
     id: "gh-open-source",
-    title: "Open Source @ OpenVINO",
-    subtitle: "Intel OpenVINO ecosystem",
+    category: "Contribution",
+    title: "OpenVINO Contributor",
+    subtitle: "Intel Ecosystem Tooling",
     detail:
-      "Contributed environment diagnostic tooling, benchmark visualization, and selective inference research to the Intel OpenVINO ecosystem.",
-    source: "https://github.com/uvv-01?tab=repositories",
+      "Engineered benchmark analytics, environment diagnostics, and selective inference pipelines contributing to the open-source Intel OpenVINO developer ecosystem.",
+    verification: "Public GitHub Repositories",
+    source: "https://github.com/uvv-01/openvino_oss_navigator",
+    monogram: "OV",
   },
   {
-    id: "gh-public-repos",
-    title: "Public Repository Count",
-    subtitle: "GitHub — live",
+    id: "gssoc",
+    category: "Participation",
+    title: "GSSoC Open Source",
+    title_long: "GirlScript Summer of Code",
+    subtitle: "Open-Source Program Participant",
     detail:
-      "Live count of original and open repositories on GitHub, fetched dynamically from the GitHub REST API.",
-    source: "https://github.com/uvv-01?tab=repositories",
-    live: "public_repos",
-  },
-  {
-    id: "gh-followers",
-    title: "GitHub Followers",
-    subtitle: "GitHub — live",
-    detail:
-      "Live follower count from GitHub. The workshop wall reflects the growing network of open-source collaborators.",
+      "Participated in collaborative open-source sprints, raising pull requests, reviewing community codebases, and shipping documentation and bug fixes.",
+    verification: "Open-Source Collaboration",
     source: "https://github.com/uvv-01",
-    live: "followers",
+    monogram: "GS",
+  },
+  {
+    id: "sih-prototyping",
+    category: "Participation & Engineering",
+    title: "Smart India Hackathon",
+    subtitle: "National Hackathon Contender",
+    detail:
+      "Prototyped full-stack and edge software solutions under tight time constraints, addressing real-world problem statements through rapid development.",
+    verification: "National Engineering Hackathon",
+    source: "https://github.com/uvv-01",
+    monogram: "SIH",
+  },
+  {
+    id: "academic-foundation",
+    category: "Academic Milestone",
+    title: "B.Tech ECE Foundation",
+    subtitle: "Arya College of Engineering",
+    detail:
+      "Undergraduate engineering foundation in Electronics and Communication: digital logic, circuit theory, semiconductor physics, and embedded software boundaries.",
+    verification: "Undergraduate Engineering Curriculum",
+    source: "https://github.com/uvv-01/arya_college_training",
+    monogram: "ECE",
   },
 ];
 
