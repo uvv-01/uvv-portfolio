@@ -1,112 +1,107 @@
 import { useRef, useEffect, useState, useCallback } from "react";
-import "./EntryScene.css";
-import bladeImg from "../assets/images/sword1.png";
+import entryImg from "../assets/images/entry.jpeg";
 
 export default function EntryScene({ goToAbout, goToRoom }) {
-  const [isEntering, setIsEntering] = useState(false);
-  const [isWiping, setIsWiping] = useState(false);
+  const [zoom, setZoom] = useState(false);
   const timerRef = useRef(null);
-  const wipeTimerRef = useRef(null);
 
-  // Approach the blade and enter through its reflective steel surface
-  const handleEnterWorkshop = useCallback(() => {
-    if (isEntering) return;
-    setIsEntering(true);
-
-    // After camera scales into the steel, trigger the darkness wipe
-    wipeTimerRef.current = setTimeout(() => {
-      setIsWiping(true);
-    }, 700);
-
-    // Complete the transition into the workshop chamber
-    timerRef.current = setTimeout(() => {
-      goToRoom();
-    }, 1300);
-  }, [isEntering, goToRoom]);
-
-  // Clean timers on unmount
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      if (wipeTimerRef.current) clearTimeout(wipeTimerRef.current);
-    };
+  const enter = useCallback((destination) => {
+    if (timerRef.current) return; // ignore double-activation during zoom
+    setZoom(true);
+    timerRef.current = setTimeout(() => destination(), 1000);
   }, []);
 
-  // Keyboard support: Space / Enter to enter workshop
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        if (e.target.tagName !== "BUTTON") {
-          e.preventDefault();
-          handleEnterWorkshop();
-        }
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [handleEnterWorkshop]);
+  const handleCharacterClick = useCallback(() => enter(goToAbout), [enter, goToAbout]);
+  const handleSwordClick = useCallback(() => enter(goToRoom), [enter, goToRoom]);
+
+  // clear the zoom-out timer if the scene unmounts mid-transition
+  useEffect(() => () => clearTimeout(timerRef.current), []);
 
   return (
-    <main className="entry-universe" aria-label="Entrance: Darkness before revelation">
-      {/* Environmental depths: deep soot vignette & subtle hearth warmth */}
-      <div className="entry-hearth-dust" aria-hidden="true" />
-      <div className="entry-vignette" aria-hidden="true" />
-      <div className={`entry-darkness-wipe ${isWiping ? "is-wiping" : ""}`} aria-hidden="true" />
+    <div
+      style={{
+        width: "100%",
+        height: "100dvh",
+        overflow: "hidden",
+        position: "relative",
+      }}
+    >
+      <img
+        src={entryImg}
+        alt="A lone warrior standing before a giant sword"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transition: "transform 1s ease-in-out",
+          transform: zoom ? "scale(1.4)" : "scale(1)",
+        }}
+      />
 
-      {/* The Central Sword Focal Stage */}
-      <div className={`entry-blade-stage ${isEntering ? "is-entering" : ""}`}>
-        <div
-          className="entry-blade-wrapper"
-          onClick={handleEnterWorkshop}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              handleEnterWorkshop();
-            }
-          }}
-          aria-label="Approach the blade — enter the blacksmith workshop"
-        >
-          <img
-            src={bladeImg}
-            alt="Worn dark steel broadsword in low workshop light"
-            className="entry-blade-img"
-            draggable="false"
-          />
-          {/* Raking specular light gliding down the blade edge */}
-          <div className="blade-glint-sweep" aria-hidden="true" />
-          <div className="steel-reflection-pass" aria-hidden="true" />
-        </div>
+      <button
+        type="button"
+        onClick={handleCharacterClick}
+        aria-label="Enter about — Yuvraj Singh"
+        className="entry-hotspot warrior-hotspot"
+        style={{
+          position: "absolute",
+          top: "8%",
+          left: "50%",
+          width: "28%",
+          height: "46%",
+          cursor: "pointer",
+          zIndex: 10,
+          background: "transparent",
+          border: "none",
+          padding: 0,
+        }}
+      >
+        <span className="entry-tooltip" aria-hidden="true">
+          THE WARRIOR
+          <small>about yuvraj</small>
+        </span>
+      </button>
+
+      <button
+        type="button"
+        onClick={handleSwordClick}
+        aria-label="Enter the workshop — forged weapons"
+        className="entry-hotspot sword-hotspot"
+        style={{
+          position: "absolute",
+          top: "44%",
+          left: "24%",
+          width: "32%",
+          height: "50%",
+          cursor: "pointer",
+          zIndex: 10,
+          background: "transparent",
+          border: "none",
+          padding: 0,
+        }}
+      >
+        <span className="entry-tooltip" aria-hidden="true">
+          THE DRAGONSLAYER
+          <small>enter the workshop</small>
+        </span>
+      </button>
+
+      <div
+        style={{
+          position: "absolute",
+          bottom: "32px",
+          width: "100%",
+          textAlign: "center",
+          color: "rgba(255, 244, 224, 0.85)",
+          letterSpacing: "2px",
+          fontSize: "13px",
+          pointerEvents: "none",
+          zIndex: 15,
+          textShadow: "0 2px 8px rgba(0,0,0,0.8)",
+        }}
+      >
+        Select the <strong>Warrior</strong> to learn about Yuvraj, or the <strong>Sword</strong> to enter the Forge
       </div>
-
-      {/* Understated narrative controls */}
-      <nav className="entry-narrative" aria-label="Workshop entry navigation">
-        <h1 className="entry-presence-title">The Craftsman&apos;s Blade</h1>
-        <p className="entry-presence-sub">Near darkness before the forge awakens</p>
-
-        <div className="entry-actions">
-          <button
-            type="button"
-            className="entry-enter-btn"
-            onClick={handleEnterWorkshop}
-            aria-label="Enter the workshop chamber"
-          >
-            Enter the Workshop &#8594;
-          </button>
-
-          {goToAbout && (
-            <button
-              type="button"
-              className="entry-chronicle-btn"
-              onClick={goToAbout}
-              aria-label="Inspect the developer's chronicle"
-            >
-              The Chronicle
-            </button>
-          )}
-        </div>
-      </nav>
-    </main>
+    </div>
   );
 }

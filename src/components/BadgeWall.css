@@ -44,14 +44,7 @@
   text-align: center;
   margin: 12px 0 6px;
   z-index: 1;
-}
-
-.wall-eyebrow {
-  display: block;
-  font-size: 10px;
-  letter-spacing: 3px;
-  color: #df8838;
-  margin-bottom: 4px;
+  
 }
 
 .wall-head h1 {
@@ -228,19 +221,6 @@
   }
 }
 
-.badge-category-tag {
-  display: inline-block;
-  font-size: 9.5px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #df8838;
-  background: rgba(220, 140, 60, 0.12);
-  border: 1px solid rgba(220, 140, 60, 0.35);
-  padding: 3px 8px;
-  border-radius: 2px;
-  margin-bottom: 8px;
-}
-
 .badge-card h2 {
   font-family: Georgia, serif;
   color: #e8d7ac;
@@ -284,22 +264,7 @@
   color: rgba(232, 215, 172, 0.85);
   line-height: 1.65;
   font-size: 14.5px;
-  margin: 0 0 14px;
-}
-
-.badge-verification {
-  font-size: 12px;
-  letter-spacing: 0.5px;
-  color: #78c882;
-  margin: 0 0 16px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.veri-icon {
-  font-size: 8px;
-  color: #78c882;
+  margin: 0 0 18px;
 }
 
 .badge-pending {

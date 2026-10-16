@@ -1,63 +1,65 @@
+import zoomImg from "../assets/images/zoom.jpeg";
 import "../index.css";
 
 export default function AboutScene({ onReturn, goToRoom }) {
   return (
-    <main
-      className="about-scene dark-craftsman-about"
+    <div
+      className="about-scene"
+      style={{ backgroundImage: `url(${zoomImg})` }}
       onDoubleClick={onReturn}
-      aria-label="About the Craftsman — Yuvraj Singh"
     >
-      <div className="about-vignette" aria-hidden="true" />
+      <div className="overlay" />
 
-      <article className="about-box">
-        <header className="about-header">
-          <span className="about-eyebrow">THE CRAFTSMAN&apos;S CHRONICLE</span>
-          <h1 className="about-name fade-item delay1">
-            Yuvraj Singh
-          </h1>
-          <p className="about-pronouns fade-item delay2">He / Him &bull; B.Tech ECE Student</p>
-        </header>
+      <div className="about-box">
+        <h1 className="about-name fade-item delay1">
+          <span className="about-rune" aria-hidden="true">
+            &#5799;
+          </span>
+          Yuvraj Singh
+        </h1>
 
-        <section className="about-content">
-          <p className="fade-item delay3 about-intro">
-            Open Source Contributor @ Intel OpenVINO. Focused on Computer Vision, Edge AI inference optimization, and systems where software logic directly commands electronics.
-          </p>
+        <p className="about-pronouns fade-item delay2">He / Him</p>
 
-          <div className="about-divider fade-item delay4" aria-hidden="true" />
+        <p className="fade-item delay3">
+          B.Tech ECE Student | Open Source @ OpenVINO (Intel)
+          <br />
+          Computer Vision &#8226; Edge AI &#8226; Web Dev &#8226; Hackathons
+        </p>
 
-          <p className="fade-item delay4">
-            <strong>Foundational Principle:</strong>
-            <br />
-            Every project begins as raw logic on the anvil. Mastery is earned by understanding time-complexity, memory constraints, and silicon behavior.
-          </p>
+        <p className="fade-item delay4">
+          I build intelligent systems where software meets electronics.
+        </p>
 
-          <p className="fade-item delay5">
-            <strong>Active Technical Focus:</strong>
-          </p>
+        <p className="fade-item delay5">
+          Contributed to OpenVINO by building environment diagnostic tools.
+        </p>
 
-          <ul className="fade-item delay6">
-            <li>Selective spatial neural inference for edge vision runtimes</li>
-            <li>Hardware-switching computer vision pipelines (CPU/GPU/AUTO)</li>
-            <li>Full-stack benchmark exploration and reproducible developer tooling</li>
-          </ul>
-        </section>
+        <p className="fade-item delay6">
+          <b>Currently exploring:</b>
+        </p>
 
-        <footer className="about-actions fade-item delay7">
-          <button type="button" className="about-return" onClick={onReturn} aria-label="Return to blade">
-            &#8592; The Blade
+        <ul className="fade-item delay7">
+          <li>Computer Vision &amp; OpenVINO</li>
+          <li>AI + Web Integration</li>
+          <li>Open Source Systems</li>
+        </ul>
+
+        <div className="about-actions fade-item delay7" style={{ display: "flex", gap: "14px", marginTop: "20px" }}>
+          <button type="button" className="about-return" onClick={onReturn}>
+            &#8592; Back to Gate
           </button>
           {goToRoom && (
             <button
               type="button"
-              className="about-return primary-entry"
+              className="about-return"
               onClick={goToRoom}
-              aria-label="Enter the workshop chamber"
+              style={{ borderColor: "rgba(255, 140, 50, 0.6)", color: "#ffb366" }}
             >
-              Enter Workshop &#8594;
+              Enter the Workshop &#8594;
             </button>
           )}
-        </footer>
-      </article>
-    </main>
+        </div>
+      </div>
+    </div>
   );
 }

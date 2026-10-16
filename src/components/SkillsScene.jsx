@@ -20,12 +20,14 @@ export default function SkillsScene({ goBack }) {
     setIndex(indexRef.current);
   }, []);
 
+  // One timer, driven by state. Cannot leak and cannot wedge:
+  // even under rapid input every accepted change starts a clean cycle.
   useEffect(() => {
     if (animating === 0) return;
     const t = setTimeout(() => {
       animatingRef.current = false;
       setAnimating(0);
-    }, 600);
+    }, 800);
     return () => clearTimeout(t);
   }, [animating]);
 
@@ -50,85 +52,56 @@ export default function SkillsScene({ goBack }) {
   const prev = mod(index - 1);
   const next = mod(index + 1);
   const moving = animating !== 0;
-  const dir = animating;
-
-  const current = skills[index];
+  const dir = animating; // 1 = forward (content slides left), -1 = backward
 
   return (
-    <main className={`skills-container ${moving ? "is-animating" : ""}`} aria-label="Armory — skills as weapons">
+    <div className={`skills-container ${moving ? "is-animating" : ""}`}>
       <div className="arc-left">
         <button
           type="button"
           className={`sword-slot left ${moving ? (dir > 0 ? "exit-far-left" : "was-center") : ""}`}
           onClick={() => changeIndex(-1)}
-          aria-label={`Previous weapon: ${skills[prev].name}`}
+          aria-label={`Previous skill: ${skills[prev].name}`}
         >
-          <img src={skills[prev].img} alt="" draggable="false" className="armory-blade-img" />
+          <img src={skills[prev].img} alt="" draggable="false" />
         </button>
 
         <div
           className={`sword-slot center ${moving ? (dir > 0 ? "enter-from-right" : "enter-from-left") : ""}`}
         >
-          <img key={index} src={current.img} alt={current.name} draggable="false" className="armory-blade-img" />
+          <img key={index} src={skills[index].img} alt={skills[index].name} draggable="false" />
         </div>
 
         <button
           type="button"
           className={`sword-slot right ${moving ? (dir > 0 ? "was-center-right" : "exit-far-right") : ""}`}
           onClick={() => changeIndex(1)}
-          aria-label={`Next weapon: ${skills[next].name}`}
+          aria-label={`Next skill: ${skills[next].name}`}
         >
-          <img src={skills[next].img} alt="" draggable="false" className="armory-blade-img" />
+          <img src={skills[next].img} alt="" draggable="false" />
         </button>
 
         <div className="arc-hint" aria-hidden="true">
-          &#9666; scroll / arrow keys &#9656;
+          &#9666; scroll / arrows &#9656;
         </div>
       </div>
 
       <div className="arc-right-panel">
-        <article className="skill-text" key={index} role="region" aria-live="polite">
+        <div className="skill-text" key={index} role="region" aria-live="polite">
           <p className="skill-eyebrow">
-            WEAPON OF CRAFT {index + 1} OF {COUNT} &bull; SKILLS AS WEAPONS
+            SKILL {index + 1} / {COUNT}
           </p>
-          <h1 className="skill-name">{current.name}</h1>
-          <p className="skill-desc">{current.desc}</p>
-
+          <h1>{skills[index].name}</h1>
+          <p className="skill-desc">{skills[index].desc}</p>
           <p className="skill-use">
-            <span className="use-label">CRAFT &amp; APPLICATION:</span> {current.use}
+            <span className="use-label">CRAFT &amp; APPLICATION:</span> {skills[index].use}
           </p>
-          <p className="line">{current.line}</p>
-
-          {/* Direct connection: SKILL -> PROJECT -> EVIDENCE */}
-          {current.evidenceProject && (
-            <section className="skill-evidence-card" aria-label="Skill application evidence">
-              <span className="evidence-badge">EVIDENCE IN WORKSHOP</span>
-              <p className="evidence-project">
-                Forged into: <strong>{current.evidenceProject}</strong>
-              </p>
-              <p className="evidence-note">{current.evidenceNote}</p>
-              {current.evidenceRepo && (
-                <a
-                  href={current.evidenceRepo}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="evidence-link"
-                >
-                  Inspect Source Code &#8599;
-                </a>
-              )}
-            </section>
-          )}
-
-          <p className="skill-forge-hint">
-            <em>These blades represent tools mastered — carried into the forge to build real systems.</em>
-          </p>
-        </article>
-
-        <button type="button" className="back-btn" onClick={goBack} aria-label="Return to workshop chamber">
+          <p className="line">{skills[index].line}</p>
+        </div>
+        <button type="button" className="back-btn" onClick={goBack}>
           &#8592; Return to Chamber
         </button>
       </div>
-    </main>
+    </div>
   );
 }

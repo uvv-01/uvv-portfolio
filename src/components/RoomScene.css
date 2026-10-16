@@ -1,7 +1,6 @@
 /* ============================================================
-   ROOM SCENE — THE MEDIEVAL BLACKSMITH WORKSHOP
-   Restrained warm hearth lighting, deep charcoal shadows,
-   natural object exploration.
+   ROOM — the workshop. Five destinations, physically placed:
+   table book, trophy wall, fire, sword, forge.
    ============================================================ */
 
 .room-scene {
@@ -10,7 +9,7 @@
   max-width: 100vw;
   height: 100vh;
   height: 100dvh;
-  background: #080605;
+  background: #0d0a07;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,21 +28,7 @@
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
-  box-shadow: 0 0 120px rgba(0, 0, 0, 0.98);
-}
-
-/* Ambient vignette: hearth provides the principal warm light, corners in deep shadow */
-.room-ambient-lighting {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle at 55% 58%,
-    rgba(255, 140, 50, 0.05) 0%,
-    rgba(10, 8, 6, 0.2) 45%,
-    rgba(6, 4, 3, 0.65) 100%
-  );
-  pointer-events: none;
-  z-index: 5;
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.95);
 }
 
 .room-zone {
@@ -55,7 +40,8 @@
   z-index: 10;
 }
 
-/* ---------- ZONE PLACEMENT (aligned to the 1536x1024 room objects) ---------- */
+/* ---------- ZONE PLACEMENT (attached to the artwork 1536x1024) ----------
+   Verified bounds matching visible room objects with zero overlaps. */
 .zone-sword {
   top: 6%;
   left: 4%;
@@ -91,93 +77,76 @@
   height: 38%;
 }
 
-/* Subtle, natural hover indicator: NO constant glaring neon.
-   Only on hover/focus does a gentle, warm raking light appear. */
-.zone-indicator {
+/* faint ember glow at rest, brighter on hover/focus */
+.room-zone::after {
+  content: "";
   position: absolute;
-  inset: 8%;
-  border-radius: 4px;
+  inset: 12%;
+  border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(255, 130, 40, 0.12) 0%,
+    rgba(255, 120, 60, 0.16) 0%,
+    rgba(255, 120, 60, 0.05) 45%,
     transparent 70%
   );
-  opacity: 0;
-  transition: opacity 0.35s ease;
+  filter: blur(14px);
+  opacity: 0.55;
+  transition: opacity 0.45s ease;
+  animation: zoneBreath 4.5s ease-in-out infinite;
   pointer-events: none;
 }
 
-.room-zone:hover .zone-indicator,
-.room-zone:focus-visible .zone-indicator {
+.room-zone:hover::after,
+.room-zone:focus-visible::after {
   opacity: 1;
 }
 
-/* Restrained action label chip */
+@keyframes zoneBreath {
+  50% { transform: scale(1.06); }
+}
+
+/* quiet label chip */
 .zone-label {
   position: absolute;
   left: 50%;
-  bottom: 2%;
-  transform: translateX(-50%) translateY(4px);
+  bottom: 4%;
+  transform: translateX(-50%);
   white-space: nowrap;
-  background: rgba(12, 9, 7, 0.9);
-  border: 1px solid rgba(220, 140, 60, 0.35);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.9);
-  padding: 6px 14px 7px;
-  border-radius: 2px;
+  font-size: clamp(10px, 1.1vw, 13px);
+  letter-spacing: 3px;
+  color: rgba(255, 244, 224, 0.85);
+  background: rgba(8, 6, 4, 0.6);
+  border: 1px solid rgba(255, 160, 80, 0.28);
+  padding: 7px 14px 5px;
   opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.45s ease;
   pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-}
-
-.zone-action {
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #df8838;
-  font-weight: 600;
-}
-
-.zone-title {
-  font-size: 11.5px;
-  letter-spacing: 1.5px;
-  color: #fff2dd;
-  font-family: Georgia, "Times New Roman", serif;
 }
 
 .zone-label small {
   display: block;
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  color: rgba(220, 205, 185, 0.55);
-  text-transform: uppercase;
+  font-size: 0.72em;
+  letter-spacing: 3px;
+  opacity: 0.6;
+  margin-top: 3px;
 }
 
 .room-zone:hover .zone-label,
 .room-zone:focus-visible .zone-label {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
 }
 
 .room-zone:focus-visible {
-  outline: 2px solid rgba(240, 160, 70, 0.85);
+  outline: 2px solid rgba(255, 200, 120, 0.8);
   outline-offset: 2px;
 }
 
-.room-mobile-header {
-  display: none;
-}
+/* ---------- MOBILE & PORTRAIT: switch to tactile chamber list ---------- */
 
-/* ---------- MOBILE & PORTRAIT: Tactile Chamber Navigation List ---------- */
 @media (max-width: 768px), (orientation: portrait) {
   .room-scene {
-    background:
-      linear-gradient(180deg, rgba(8, 6, 5, 0.84) 0%, rgba(8, 6, 5, 0.95) 100%),
-      url("../assets/images/room.webp") center/cover no-repeat;
-    padding: 32px 16px 40px;
+    background: #0d0a07;
+    padding: 24px 16px;
     align-items: center;
     justify-content: center;
     overflow-y: auto;
@@ -190,41 +159,12 @@
     justify-content: center;
     gap: 12px;
     width: 100%;
-    max-width: 440px;
+    max-width: 100%;
     height: auto;
     max-height: none;
     aspect-ratio: auto;
     background-image: none !important;
     box-shadow: none;
-  }
-
-  .room-mobile-header {
-    display: block;
-    text-align: center;
-    margin-bottom: 6px;
-  }
-
-  .room-mobile-eyebrow {
-    display: block;
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: #df8838;
-    text-transform: uppercase;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  .room-mobile-title {
-    margin: 0;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 22px;
-    color: #fff2dd;
-    letter-spacing: 1px;
-    font-weight: 500;
-  }
-
-  .room-ambient-lighting {
-    display: none;
   }
 
   .room-zone,
@@ -242,7 +182,7 @@
     box-sizing: border-box;
   }
 
-  .zone-indicator {
+  .room-zone::after {
     display: none;
   }
 
@@ -251,52 +191,33 @@
     transform: none;
     opacity: 1;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 3px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     white-space: normal;
-    padding: 13px 18px;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    padding: 14px 16px;
     box-sizing: border-box;
     width: 100%;
-    background: rgba(18, 14, 11, 0.9);
-    border: 1px solid rgba(220, 140, 60, 0.35);
-    border-radius: 4px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.75);
-    transition: background 0.2s ease, border-color 0.2s ease;
-  }
-
-  .room-zone:hover .zone-label,
-  .room-zone:focus-visible .zone-label {
-    background: rgba(30, 22, 16, 0.96);
-    border-color: rgba(255, 160, 60, 0.7);
-  }
-
-  .zone-action {
-    font-size: 9.5px;
-    letter-spacing: 2px;
-    color: #df8838;
-    font-weight: 700;
-  }
-
-  .zone-title {
-    font-size: 15px;
-    letter-spacing: 0.8px;
-    color: #fff2dd;
-    font-family: Georgia, "Times New Roman", serif;
+    background: rgba(18, 14, 10, 0.9);
+    border: 1px solid rgba(255, 140, 50, 0.35);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
   }
 
   .zone-label small {
-    display: block;
-    font-size: 11px;
-    letter-spacing: 0.8px;
-    color: rgba(220, 205, 185, 0.7);
-    text-transform: none;
+    margin: 0;
+    flex-shrink: 0;
+    text-align: right;
+    letter-spacing: 1.5px;
+    color: #ff9944;
   }
 }
 
-/* Reduced motion */
+/* ---------- REDUCED MOTION ---------- */
+
 @media (prefers-reduced-motion: reduce) {
-  .zone-label {
-    transition: none;
+  .room-zone::after {
+    animation: none;
   }
 }
