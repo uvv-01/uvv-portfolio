@@ -1,225 +1,245 @@
 /* ============================================================
-   FORGE STAGE — REALISTIC MEDIEVAL BLACKSMITH ENVIRONMENT
-   Physical anvil contact, realistic hammer trajectory,
-   desaturated steel and restrained ember lighting.
+   PROJECT WORKSHOP & FORGING LOADING SEQUENCE
+   Dark medieval blacksmithing environment inspired by Berserk.
+   Physical anvil, weighted hammer, half-forged WIP blades,
+   hearth sharpening stone, and finished master swords.
    ============================================================ */
 
-.forge-scene {
+.smithy-viewport {
+  position: fixed;
+  inset: 0;
   width: 100%;
   height: 100vh;
   height: 100dvh;
-  background: #080605;
-  position: relative;
+  background: #060504;
   overflow: hidden;
   color: #fff2dd;
   font-family: "Poppins", sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  z-index: 50;
   box-sizing: border-box;
 }
 
-/* Contained workshop background */
-.forge-contained-bg {
+/* Contained workshop background — strictly isolated to prevent any bleed */
+.workshop-bg-layer {
   position: absolute;
   inset: 0;
   background-size: cover;
   background-position: center;
-  filter: brightness(0.32) contrast(1.15) saturate(0.85);
+  filter: brightness(0.26) contrast(1.15) saturate(0.85);
   pointer-events: none;
   z-index: 1;
 }
 
-/* Dark soot vignette isolating the forge stage */
-.forge-vignette-overlay {
+.workshop-soot-vignette {
   position: absolute;
   inset: 0;
   background: radial-gradient(
-    ellipse at center,
-    rgba(12, 9, 7, 0.45) 0%,
-    rgba(8, 6, 4, 0.85) 65%,
-    #050403 100%
+    circle at 50% 50%,
+    rgba(14, 10, 7, 0.4) 0%,
+    rgba(8, 6, 4, 0.82) 60%,
+    #040303 100%
   );
   pointer-events: none;
   z-index: 2;
 }
 
-/* The Self-Contained Stage */
-.forge-stage {
+/* ============================================================
+   1. FORGING INTRO SEQUENCE (Cinematic Loading Transition)
+   ============================================================ */
+
+.forging-intro-stage {
   position: relative;
+  z-index: 10;
   width: 100%;
   height: 100%;
-  max-width: 1600px;
-  max-height: 1000px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
-  padding: 16px 24px 20px;
+  justify-content: center;
+  padding: 30px 20px 40px;
   box-sizing: border-box;
-  z-index: 10;
+  animation: introFadeIn 0.8s ease both;
 }
 
-/* ---------- TOP NAV & WEAPON RACK ---------- */
-.forge-nav {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  z-index: 30;
+@keyframes introFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.forge-back-btn {
-  background: rgba(16, 12, 9, 0.88);
-  border: 1px solid rgba(220, 140, 60, 0.35);
-  color: #f0b06a;
-  font-size: 11.5px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  padding: 8px 16px;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  white-space: nowrap;
+.forging-intro-footer {
+  position: absolute;
+  bottom: 28px;
+  right: 32px;
+  z-index: 20;
 }
 
-.forge-back-btn:hover {
-  background: rgba(32, 22, 15, 0.95);
-  border-color: #ff9944;
-  color: #fff4e0;
-}
-
-.weapon-rack {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  padding: 4px;
-  background: rgba(12, 9, 6, 0.8);
-  border: 1px solid rgba(220, 140, 60, 0.25);
-  border-radius: 4px;
-  max-width: calc(100vw - 160px);
-}
-
-.weapon-rack::-webkit-scrollbar {
-  display: none;
-}
-
-.rack-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(20, 15, 11, 0.75);
-  border: 1px solid rgba(220, 140, 60, 0.2);
-  color: rgba(240, 230, 215, 0.75);
-  padding: 4px 10px;
-  border-radius: 2px;
-  cursor: pointer;
-  white-space: nowrap;
-  font-size: 11px;
-  letter-spacing: 0.8px;
-  transition: all 0.2s ease;
-}
-
-.rack-item:hover {
-  background: rgba(35, 25, 17, 0.92);
-  border-color: rgba(240, 150, 60, 0.5);
-  color: #fff4e0;
-}
-
-.rack-item.is-selected {
-  background: rgba(220, 110, 30, 0.25);
-  border-color: #df8838;
-  color: #ffc280;
-}
-
-.rack-item.is-forged::after {
-  content: "✓";
-  font-size: 9px;
-  color: #78c882;
-  margin-left: 2px;
-}
-
-.rack-sword-thumb {
-  width: 14px;
-  height: 20px;
-  object-fit: contain;
-  filter: grayscale(0.7) contrast(1.2) drop-shadow(0 0 3px rgba(0, 0, 0, 0.9));
-}
-
-/* ---------- CENTRAL ANVIL ZONE ---------- */
-.anvil-zone {
+/* Anvil Rig in the intro */
+.intro-anvil-rig {
   position: relative;
-  width: 100%;
-  max-width: 600px;
-  height: clamp(280px, 42vh, 420px);
+  width: min(440px, 88vw);
+  height: 280px;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: 20px;
+  transition: transform 0.12s ease;
+}
+
+.intro-anvil-rig.is-jolting {
+  animation: rigJolt 0.18s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes rigJolt {
+  0% { transform: translateY(0); }
+  35% { transform: translateY(4px); }
+  70% { transform: translateY(-1.5px); }
+  100% { transform: translateY(0); }
+}
+
+.intro-anvil-svg-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.anvil-svg {
+  width: 100%;
+  height: auto;
+  max-height: 220px;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.95));
+}
+
+/* Workpiece aligned with hardened face */
+.intro-workpiece {
+  position: absolute;
+  left: 50%;
+  bottom: 168px;
+  transform: translateX(-50%);
+  width: 170px;
+  height: 18px;
+  display: flex;
   align-items: center;
-  margin-bottom: 8px;
-  transition: transform 0.08s ease;
+  justify-content: center;
+  z-index: 15;
 }
 
-/* Subtle physical vibration into stump on strike impact */
-.anvil-zone.is-jolting {
-  transform: translateY(2px);
+.workpiece-bar {
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  position: relative;
+  transition: all 0.35s ease;
 }
 
-/* ---------- BLACKSMITH'S HAMMER ---------- */
+.bar-core {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+}
+
+.ember-glow {
+  background: linear-gradient(90deg, #7c2206 0%, #ff5511 40%, #ff9e22 65%, #7c2206 100%);
+  box-shadow: 0 0 16px rgba(255, 90, 20, 0.5), inset 0 0 6px #fff;
+}
+
+.ember-active {
+  background: linear-gradient(90deg, #992807 0%, #ff7711 35%, #ffd244 55%, #ff7711 75%, #992807 100%);
+  box-shadow: 0 0 24px rgba(255, 120, 30, 0.7), inset 0 0 8px #fff;
+}
+
+.ember-cooling {
+  background: linear-gradient(90deg, #3a2216 0%, #cc4411 45%, #6e2714 80%, #3a2216 100%);
+  box-shadow: 0 0 12px rgba(200, 70, 20, 0.4);
+}
+
+.tempered-steel {
+  background: linear-gradient(90deg, #1c1815 0%, #3d352e 50%, #1c1815 100%);
+  border: 1px solid rgba(140, 120, 100, 0.3);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.fuller-line {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: #110d0a;
+  transform: translateY(-50%);
+  opacity: 0.8;
+}
+
+.workpiece-sword.reveal {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: swordSettle 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes swordSettle {
+  from { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.9); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+.intro-sword-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.9));
+}
+
+/* Craftsman Hammer in intro */
 .craftsman-hammer {
   position: absolute;
-  top: 15%;
-  left: 54%;
+  top: -45px;
+  left: 50%;
   width: 140px;
   height: 100px;
   pointer-events: none;
   z-index: 25;
-  transform-origin: 85% 85%;
-  transform: rotate(0deg) translate(0, 0);
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.4, 1);
+  transform-origin: 95px 45px;
+  transition: transform 0.25s ease;
 }
 
-/* Real hammer trajectory: raises back, accelerates rapidly down to contact workpiece, pauses, recoils naturally */
-.craftsman-hammer.is-swinging {
-  animation: hammerTrajectory 0.38s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+.craftsman-hammer.is-poised {
+  transform: rotate(-30deg) translate(-25px, -15px);
 }
 
-@keyframes hammerTrajectory {
-  0% {
-    transform: rotate(18deg) translate(8px, -12px);
-  }
-  35% {
-    transform: rotate(26deg) translate(14px, -20px); /* backswing */
-  }
-  65% {
-    transform: rotate(-38deg) translate(-32px, 42px); /* sharp impact contact */
-  }
-  75% {
-    transform: rotate(-38deg) translate(-32px, 42px); /* impact compression pause */
-  }
-  100% {
-    transform: rotate(-8deg) translate(-8px, 6px); /* natural rebound recoil */
-  }
+.craftsman-hammer.is-striking {
+  animation: hammerDescent 0.38s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes hammerDescent {
+  0% { transform: rotate(-35deg) translate(-30px, -20px); }
+  40% { transform: rotate(-38deg) translate(-32px, -22px); }
+  75% { transform: rotate(4deg) translate(-2px, 2px); }
+  82% { transform: rotate(-8deg) translate(-8px, -4px); }
+  100% { transform: rotate(-30deg) translate(-25px, -15px); }
 }
 
 .hammer-svg {
   width: 100%;
-  height: auto;
-  display: block;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.95));
+  height: 100%;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.85));
 }
 
-/* ---------- POINT-IMPACT SPARKS (Confined to exact contact point) ---------- */
+/* Point Sparks strictly localized at impact */
 .point-sparks {
   position: absolute;
-  bottom: 136px;
-  left: 48%;
+  top: 96px;
+  left: 50%;
   transform: translateX(-50%);
-  width: 2px;
-  height: 2px;
+  width: 1px;
+  height: 1px;
   pointer-events: none;
   z-index: 30;
 }
@@ -228,644 +248,824 @@
   position: absolute;
   width: 3px;
   height: 3px;
-  background: #fff4d0;
+  background: #fff5cc;
   border-radius: 50%;
-  box-shadow: 0 0 6px #ff8811, 0 0 10px #ff3300;
-  animation: emberFly 0.24s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+  box-shadow: 0 0 6px #ff8822, 0 0 12px #ff4400;
+  animation: sparkBurst 0.24s ease-out forwards;
 }
 
-.p1 { --tx: -24px; --ty: -18px; }
-.p2 { --tx: 28px; --ty: -22px; }
-.p3 { --tx: -14px; --ty: -32px; }
-.p4 { --tx: 18px; --ty: -28px; }
-.p5 { --tx: -32px; --ty: -8px; }
-.p6 { --tx: 30px; --ty: -12px; }
+.spark-ember.p1 { --tx: -24px; --ty: -22px; }
+.spark-ember.p2 { --tx: 26px; --ty: -20px; }
+.spark-ember.p3 { --tx: -14px; --ty: -32px; }
+.spark-ember.p4 { --tx: 18px; --ty: -30px; }
+.spark-ember.p5 { --tx: -32px; --ty: -10px; }
+.spark-ember.p6 { --tx: 30px; --ty: -12px; }
 
-@keyframes emberFly {
+@keyframes sparkBurst {
   0% { transform: translate(0, 0) scale(1.4); opacity: 1; }
   100% { transform: translate(var(--tx), var(--ty)) scale(0.3); opacity: 0; }
 }
 
-/* Quenching Steam */
+/* Quench Steam */
 .quench-steam {
   position: absolute;
-  bottom: 140px;
+  top: 86px;
   left: 50%;
   transform: translateX(-50%);
-  width: 100px;
-  height: 60px;
   pointer-events: none;
   z-index: 22;
 }
 
 .vapor {
   position: absolute;
-  width: 45px;
-  height: 45px;
-  background: radial-gradient(circle, rgba(215, 230, 245, 0.35) 0%, transparent 70%);
+  width: 8px;
+  height: 8px;
+  background: rgba(220, 230, 240, 0.35);
   border-radius: 50%;
-  filter: blur(10px);
-  animation: steamRise 0.8s ease-out forwards;
+  filter: blur(5px);
+  animation: vaporRise 0.8s ease-out forwards;
 }
 
-.v1 { left: 15%; --vx: -12px; animation-delay: 0s; }
-.v2 { left: 45%; --vx: 8px; animation-delay: 0.1s; }
-.v3 { left: 30%; --vx: -4px; animation-delay: 0.2s; }
+.vapor.v1 { left: -15px; animation-delay: 0s; }
+.vapor.v2 { left: 0px; animation-delay: 0.15s; }
+.vapor.v3 { left: 15px; animation-delay: 0.08s; }
 
-@keyframes steamRise {
-  0% { transform: translateY(0) scale(0.6); opacity: 0.7; }
-  100% { transform: translateY(-55px) translateX(var(--vx)) scale(1.6); opacity: 0; }
+@keyframes vaporRise {
+  0% { transform: translateY(0) scale(1); opacity: 0.6; }
+  100% { transform: translateY(-40px) scale(3.5); opacity: 0; }
 }
 
-/* ---------- THE WORKPIECE: RESTING FLAT ON THE ANVIL FACE ---------- */
-.workpiece-stage {
-  position: absolute;
-  bottom: 127px; /* Sits directly on the anvil top face */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 18;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.35s ease;
-}
-
-.workpiece-bar {
-  position: relative;
-  border-radius: 2px;
-  transition: all 0.3s ease;
-}
-
-/* Stage 1: In Hearth Coals */
-.workpiece-bar.in-hearth {
-  width: clamp(140px, 18vw, 190px);
-  height: 18px;
-  background: linear-gradient(180deg, #382c22 0%, #1a140f 100%);
-  border: 1px solid rgba(220, 100, 30, 0.3);
-  box-shadow: 0 0 16px rgba(220, 80, 20, 0.4);
-}
-
-.bar-core.ember-cherry {
-  position: absolute;
-  inset: 2px;
-  background: linear-gradient(90deg, #ff6611 0%, #cc3300 60%, #881100 100%);
-  border-radius: 1px;
-  box-shadow: 0 0 12px rgba(255, 90, 20, 0.7);
-}
-
-/* Stage 2: Mounted on Anvil */
-.workpiece-bar.on-anvil.incandescent {
-  width: clamp(150px, 20vw, 210px);
-  height: 18px;
-  background: #ff5500;
-  box-shadow: 0 0 20px rgba(255, 80, 20, 0.8), 0 3px 6px rgba(0, 0, 0, 0.95);
-}
-
-/* Stage 3: Drawn Steel (Primary blow flattens and extends) */
-.workpiece-bar.drawn-stock {
-  width: clamp(180px, 24vw, 250px);
-  height: 15px;
-  background: linear-gradient(180deg, #ffaa22 0%, #dd4400 60%, #991100 100%);
-  border-radius: 2px 10px 10px 2px;
-  box-shadow: 0 0 18px rgba(255, 100, 20, 0.75), 0 3px 6px rgba(0, 0, 0, 0.95);
-}
-
-.bar-core.ember-hot {
-  position: absolute;
-  left: 5%;
-  right: 15%;
-  top: 40%;
-  height: 2px;
-  background: #fff4cc;
-}
-
-/* Stage 4: Shaped Blank with Fuller */
-.workpiece-bar.shaped-blank {
-  width: clamp(210px, 27vw, 290px);
-  height: 16px;
-  background: linear-gradient(180deg, #ff8811 0%, #aa3300 60%, #441100 100%);
-  clip-path: polygon(0% 40%, 10% 40%, 10% 20%, 13% 20%, 13% 35%, 88% 35%, 100% 50%, 88% 65%, 13% 65%, 13% 80%, 10% 80%, 10% 60%, 0% 60%);
-  box-shadow: 0 0 16px rgba(220, 90, 20, 0.6);
-}
-
-.bevel-ridge {
-  position: absolute;
-  left: 13%;
-  right: 14%;
-  top: 45%;
-  height: 1.5px;
-  background: rgba(255, 240, 200, 0.75);
-}
-
-/* Stage 5: Quenched Dark Tempered Steel */
-.workpiece-bar.quenched-steel {
-  width: clamp(210px, 27vw, 290px);
-  height: 16px;
-  background: linear-gradient(180deg, #5a6672 0%, #2b333a 50%, #151a1e 100%);
-  clip-path: polygon(0% 40%, 10% 40%, 10% 20%, 13% 20%, 13% 35%, 88% 35%, 100% 50%, 88% 65%, 13% 65%, 13% 80%, 10% 80%, 10% 60%, 0% 60%);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.9);
-}
-
-/* Stage 6: Honed Edge with Fine Grinding Line */
-.workpiece-bar.honed-edge {
-  width: clamp(210px, 27vw, 290px);
-  height: 16px;
-  background: linear-gradient(180deg, #6c7884 0%, #343d45 50%, #181d22 100%);
-  clip-path: polygon(0% 40%, 10% 40%, 10% 20%, 13% 20%, 13% 35%, 88% 35%, 100% 50%, 88% 65%, 13% 65%, 13% 80%, 10% 80%, 10% 60%, 0% 60%);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.95);
-}
-
-.whetstone-hone-glint {
-  position: absolute;
-  left: 14%;
-  right: 12%;
-  top: 48%;
-  height: 1.5px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.8) 0%, rgba(200, 220, 240, 0.9) 70%, transparent 100%);
-}
-
-/* Stage 7: Revealed Master Sword */
-.stage-reveal {
-  bottom: 40px; /* Stands majestically above anvil */
-}
-
-.workpiece-sword {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.forged-sword-img {
-  width: clamp(140px, 18vw, 230px);
-  max-height: clamp(250px, 42vh, 420px);
-  object-fit: contain;
-  display: block;
-  filter: grayscale(0.65) contrast(1.2) brightness(0.92) drop-shadow(0 14px 28px rgba(0, 0, 0, 0.98));
-  animation: bladeReveal 0.65s cubic-bezier(0.2, 0.9, 0.3, 1) both;
-}
-
-@keyframes bladeReveal {
-  from {
-    opacity: 0;
-    transform: translateY(24px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* ---------- CRAFTSMAN ANVIL ON STUMP ---------- */
-.craftsman-anvil {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  filter: drop-shadow(0 14px 30px rgba(0, 0, 0, 0.98));
-  z-index: 10;
-}
-
-.anvil-svg {
-  width: clamp(230px, 32vw, 360px);
-  height: auto;
-  display: block;
-}
-
-/* ---------- TACTICAL CONTROLLER BAR ---------- */
-.forge-controller {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  width: min(92vw, 560px);
-  z-index: 25;
-}
-
-/* Progress Pips */
-.forge-track {
-  display: flex;
-  gap: 6px;
-  width: 100%;
-  justify-content: center;
-}
-
-.track-pip {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 7px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-  background: rgba(14, 11, 8, 0.85);
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 10px;
-  letter-spacing: 0.8px;
-  transition: all 0.3s ease;
-}
-
-.track-pip.done {
-  border-color: rgba(220, 140, 60, 0.45);
-  color: #df8838;
-}
-
-.track-pip.active {
-  border-color: #f0a050;
+.skip-to-workshop-btn {
+  background: rgba(20, 15, 11, 0.85);
+  border: 1px solid rgba(220, 140, 60, 0.45);
   color: #fff2dd;
-  background: rgba(35, 24, 16, 0.95);
-}
-
-.pip-num {
-  font-family: Georgia, serif;
-  font-size: 10px;
-  color: #df8838;
-}
-
-/* Action Row */
-.action-row {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.strike-trigger-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(22, 16, 11, 0.92);
-  border: 1px solid rgba(220, 140, 60, 0.5);
-  color: #f0b06a;
-  font-size: 12.5px;
-  font-weight: 600;
-  letter-spacing: 1.8px;
+  font-size: 12px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  padding: 10px 24px;
+  padding: 10px 22px;
   border-radius: 2px;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.85);
 }
 
-.strike-trigger-btn:hover,
-.strike-trigger-btn:focus-visible {
-  border-color: #ff9944;
-  background: rgba(36, 25, 17, 0.98);
-  color: #fff4e0;
+.skip-to-workshop-btn:hover {
+  background: rgba(35, 24, 16, 0.95);
+  border-color: #ffaa55;
+  box-shadow: 0 0 16px rgba(255, 140, 50, 0.3);
 }
 
-.strike-trigger-btn.reforge-mode {
-  border-color: rgba(120, 200, 130, 0.4);
-  color: #a4ddab;
+/* ============================================================
+   2. THE PROJECT WORKSHOP FLOOR
+   ============================================================ */
+
+.workshop-floor {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  transition: filter 0.35s ease;
 }
 
-.key-hint {
-  font-size: 10px;
-  letter-spacing: 1px;
-  opacity: 0.55;
-  color: #e8d0b5;
+.workshop-floor.has-focus {
+  filter: brightness(0.75);
 }
 
-.skip-blade-btn {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: rgba(240, 230, 215, 0.6);
-  font-size: 11px;
-  letter-spacing: 1px;
-  padding: 8px 14px;
+/* Top Navigation Bar */
+.workshop-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(220, 140, 60, 0.2);
+  margin-bottom: 16px;
+}
+
+.workshop-exit-btn {
+  background: rgba(18, 14, 10, 0.88);
+  border: 1px solid rgba(220, 140, 60, 0.4);
+  color: #f5e8d2;
+  font-size: 11.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 8px 16px;
   border-radius: 2px;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.skip-blade-btn:hover {
-  border-color: rgba(220, 140, 60, 0.5);
-  color: #f0b06a;
+.workshop-exit-btn:hover {
+  background: rgba(35, 25, 16, 0.95);
+  border-color: #ffaa55;
 }
 
-.forge-status-hint {
-  margin: 0;
+.workshop-zone-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.zone-nav-btn {
+  background: transparent;
+  border: 1px solid rgba(160, 130, 100, 0.25);
+  color: rgba(220, 205, 185, 0.7);
   font-size: 11px;
   letter-spacing: 1px;
-  color: rgba(240, 225, 205, 0.65);
-  text-align: center;
+  padding: 6px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
 }
 
-/* ---------- THE PROJECT REWARD DOSSIER ---------- */
-.project-reward-dossier {
-  position: absolute;
-  left: 36px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: min(38vw, 480px);
-  max-height: 82vh;
-  overflow-y: auto;
-  background: rgba(13, 10, 7, 0.95);
-  border: 1px solid rgba(220, 140, 60, 0.35);
-  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.95);
-  padding: clamp(16px, 2vw, 24px);
+.zone-nav-btn:hover {
+  color: #fff2dd;
+  border-color: rgba(220, 140, 60, 0.45);
+}
+
+.zone-nav-btn.is-active {
+  background: rgba(220, 140, 60, 0.15);
+  border-color: #df8838;
+  color: #ffb86c;
+  font-weight: 600;
+}
+
+/* 3-Station Layout */
+.workshop-stations-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1.25fr;
+  gap: 20px;
+  flex: 1;
+  align-items: stretch;
+  min-height: 480px;
+}
+
+.workshop-station {
+  background: rgba(14, 11, 8, 0.75);
+  border: 1px solid rgba(220, 140, 60, 0.22);
   border-radius: 4px;
-  backdrop-filter: blur(14px);
-  z-index: 35;
-  animation: dossierSlideIn 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  box-sizing: border-box;
 }
 
-@keyframes dossierSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-50%) translateX(-24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0);
-  }
-}
-
-.dossier-header {
-  border-bottom: 1px solid rgba(220, 140, 60, 0.2);
+.station-header {
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(140, 100, 60, 0.18);
   padding-bottom: 10px;
-  margin-bottom: 12px;
 }
 
-.dossier-badge {
+.station-eyebrow {
   display: block;
   font-size: 9.5px;
   letter-spacing: 2px;
   color: #df8838;
+  font-weight: 700;
   text-transform: uppercase;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
-.dossier-title {
-  margin: 0 0 4px;
+.station-title {
+  margin: 0 0 3px;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(20px, 2.2vw, 26px);
+  font-size: 18px;
   color: #fff2dd;
   letter-spacing: 0.8px;
 }
 
-.dossier-moniker {
+.station-desc {
   margin: 0;
-  font-size: 12px;
-  color: #f0b06a;
+  font-size: 11.5px;
+  color: rgba(220, 205, 185, 0.65);
+  line-height: 1.4;
 }
 
-.dossier-moniker em {
-  font-style: normal;
-  font-weight: 600;
-  color: #ffd088;
-}
-
-/* Tech Tags */
-.dossier-tech-tags {
+/* Rack Container */
+.swords-rack {
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 12px;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  justify-content: space-around;
 }
 
-.tech-tag {
-  background: rgba(220, 110, 30, 0.12);
-  border: 1px solid rgba(220, 140, 60, 0.25);
-  color: #f0b06a;
-  font-size: 10px;
+/* Sword Stand Cards */
+.sword-stand {
+  background: rgba(22, 17, 13, 0.8);
+  border: 1px solid rgba(180, 120, 60, 0.25);
+  border-radius: 3px;
+  padding: 12px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.sword-stand:hover,
+.sword-stand:focus-visible {
+  background: rgba(35, 26, 18, 0.95);
+  border-color: #df8838;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8);
+}
+
+.sword-stand:focus-visible {
+  outline: 2px solid #df8838;
+  outline-offset: 2px;
+}
+
+/* Previews */
+.half-forged-blade-preview,
+.finished-blade-preview {
+  width: 50px;
+  height: 80px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.blade-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
+  transition: transform 0.25s ease;
+}
+
+.blade-img.partial-forge {
+  filter: sepia(0.3) saturate(1.2) drop-shadow(0 0 6px rgba(220, 80, 20, 0.35));
+  opacity: 0.9;
+}
+
+.blade-img.finished-polish {
+  filter: contrast(1.15) brightness(1.05) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.95));
+}
+
+.sword-stand:hover .blade-img {
+  transform: scale(1.06);
+}
+
+.stand-tag {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tag-status {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: #df8838;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.tag-status.completed {
+  color: #7ab87a;
+}
+
+.tag-title {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14.5px;
+  color: #fff2dd;
   letter-spacing: 0.5px;
-  padding: 3px 7px;
+}
+
+.tag-identity {
+  font-size: 10.5px;
+  color: rgba(220, 205, 185, 0.6);
+  font-style: italic;
+}
+
+/* Zone 2: Hearth Fire & Sharpening Rig */
+.sharpening-hearth-rig {
+  background: rgba(24, 18, 13, 0.85);
+  border: 1px solid rgba(220, 140, 60, 0.35);
+  border-radius: 4px;
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.sharpening-hearth-rig:hover,
+.sharpening-hearth-rig:focus-visible {
+  background: rgba(36, 26, 18, 0.96);
+  border-color: #ffaa55;
+  box-shadow: 0 8px 24px rgba(220, 100, 30, 0.2);
+}
+
+.sharpening-hearth-rig:focus-visible {
+  outline: 2px solid #df8838;
+  outline-offset: 2px;
+}
+
+/* Believable Small Hearth Fire */
+.hearth-fire-box {
+  width: 90px;
+  height: 65px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.fire-core {
+  position: absolute;
+  bottom: 0;
+  width: 60px;
+  height: 28px;
+  background: radial-gradient(ellipse at center bottom, #ff9922 0%, #aa2c08 65%, transparent 100%);
+  filter: blur(4px);
+  opacity: 0.85;
+}
+
+.fire-flame {
+  position: absolute;
+  bottom: 2px;
+  border-radius: 50% 50% 20% 20%;
+  background: linear-gradient(to top, rgba(255, 180, 50, 0.95), rgba(220, 60, 10, 0.45), transparent);
+  filter: blur(2px);
+  animation: flameFlicker 1.8s ease-in-out infinite alternate;
+}
+
+.fire-flame.f1 { width: 24px; height: 44px; left: 24px; animation-duration: 1.4s; }
+.fire-flame.f2 { width: 30px; height: 50px; left: 32px; animation-duration: 1.9s; animation-delay: 0.2s; }
+.fire-flame.f3 { width: 20px; height: 38px; left: 46px; animation-duration: 1.6s; animation-delay: 0.4s; }
+
+@keyframes flameFlicker {
+  0% { transform: scaleY(0.92) scaleX(0.98); opacity: 0.75; }
+  50% { transform: scaleY(1.08) scaleX(1.04) rotate(1deg); opacity: 0.95; }
+  100% { transform: scaleY(0.96) scaleX(0.95) rotate(-1deg); opacity: 0.8; }
+}
+
+.hearth-embers-cluster .ember {
+  position: absolute;
+  width: 2.5px;
+  height: 2.5px;
+  background: #ffcc44;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #ff5500;
+  animation: emberFloat 2.2s linear infinite;
+  opacity: 0;
+}
+
+.ember.e1 { left: 35px; bottom: 15px; animation-delay: 0.2s; }
+.ember.e2 { left: 48px; bottom: 20px; animation-delay: 1.1s; }
+.ember.e3 { left: 55px; bottom: 12px; animation-delay: 0.6s; }
+
+@keyframes emberFloat {
+  0% { transform: translateY(0); opacity: 0; }
+  30% { opacity: 0.9; }
+  80% { opacity: 0.5; }
+  100% { transform: translateY(-30px); opacity: 0; }
+}
+
+/* Whetstone Surface & Hone Animation */
+.sharpening-stone-surface {
+  width: 100%;
+  height: 120px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.whetstone-block {
+  width: 140px;
+  height: 26px;
+  background: linear-gradient(180deg, #504840 0%, #2b2622 100%);
+  border: 1px solid #1a1614;
+  border-radius: 2px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.85);
+  position: absolute;
+  bottom: 22px;
+}
+
+.hone-blade-wrap {
+  width: 70px;
+  height: 110px;
+  position: absolute;
+  bottom: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: honeSlide 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes honeSlide {
+  0% { transform: translateX(-18px) rotate(-1deg); }
+  100% { transform: translateX(18px) rotate(1deg); }
+}
+
+.hone-blade-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.9));
+}
+
+.hone-sparks-stream {
+  position: absolute;
+  bottom: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.h-spark {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff8e0;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #ff7700;
+  animation: honeSpark 1.2s ease-out infinite;
+  opacity: 0;
+}
+
+.h-spark.s1 { animation-delay: 0.1s; }
+.h-spark.s2 { animation-delay: 0.5s; left: 4px; }
+.h-spark.s3 { animation-delay: 0.9s; left: -4px; }
+
+@keyframes honeSpark {
+  0% { transform: translate(0, 0); opacity: 1; }
+  100% { transform: translate(8px, -12px); opacity: 0; }
+}
+
+.sharpening-card-tag {
+  text-align: center;
+  width: 100%;
+  padding-top: 10px;
+  border-top: 1px solid rgba(180, 120, 60, 0.2);
+}
+
+/* ============================================================
+   3. RESTRAINED PROJECT FOCUS DOSSIER (Selected Sword)
+   ============================================================ */
+
+.project-inspection-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 3, 2, 0.88);
+  backdrop-filter: blur(4px);
+}
+
+.inspection-card {
+  position: relative;
+  z-index: 10;
+  width: min(840px, 94vw);
+  max-height: 90vh;
+  background: linear-gradient(135deg, rgba(22, 16, 12, 0.96) 0%, rgba(12, 9, 7, 0.98) 100%);
+  border: 1px solid rgba(220, 140, 60, 0.45);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 30px rgba(220, 100, 30, 0.12);
+  border-radius: 4px;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  overflow-y: auto;
+  box-sizing: border-box;
+  animation: modalPop 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.card-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: #df8838;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  z-index: 15;
+  transition: color 0.2s ease;
+}
+
+.card-close-btn:hover {
+  color: #fff;
+}
+
+.card-sword-focus {
+  background: rgba(8, 6, 4, 0.65);
+  border-right: 1px solid rgba(220, 140, 60, 0.2);
+  padding: 30px 18px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.focused-sword-img {
+  max-width: 130px;
+  max-height: 320px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.95));
+}
+
+.blade-seal {
+  text-align: center;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.seal-moniker {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 13.5px;
+  color: #fff2dd;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.seal-stage-badge {
+  display: inline-block;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #df8838;
+  background: rgba(220, 140, 60, 0.12);
+  border: 1px solid rgba(220, 140, 60, 0.3);
+  padding: 3px 8px;
   border-radius: 2px;
 }
 
-/* Dossier Fields */
-.dossier-body {
+.card-details-panel {
+  padding: 28px 30px 24px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  box-sizing: border-box;
+}
+
+.details-header {
   margin-bottom: 14px;
 }
 
-.dossier-field h3 {
-  margin: 0 0 3px;
-  font-size: 10px;
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9.5px;
   letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: #df8838;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #df8838;
+  box-shadow: 0 0 6px #ff8833;
+}
+
+.details-title {
+  margin: 0 0 6px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(20px, 2.5vw, 26px);
+  color: #fff2dd;
+  letter-spacing: 0.8px;
+}
+
+.details-desc {
+  margin: 0;
+  font-size: 13px;
+  color: #d8c8b4;
+  line-height: 1.5;
+}
+
+.details-tech-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.tech-badge {
+  background: rgba(220, 140, 60, 0.1);
+  border: 1px solid rgba(220, 140, 60, 0.28);
+  color: #f0dfc8;
+  font-size: 10.5px;
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+
+.details-content-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+.field-group h3 {
+  margin: 0 0 4px;
+  font-size: 10.5px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: #df8838;
 }
 
-.dossier-field p {
+.field-group p {
   margin: 0;
   font-size: 12.5px;
+  color: #dcd0bf;
   line-height: 1.55;
-  color: rgba(245, 235, 220, 0.85);
 }
 
-.dossier-highlights {
-  list-style: none;
-  padding: 0;
-  margin: 4px 0 0;
+.details-highlights {
+  margin: 0;
+  padding-left: 18px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.dossier-highlights li {
-  font-size: 11.5px;
+.details-highlights li {
+  font-size: 12px;
+  color: rgba(220, 205, 185, 0.85);
   line-height: 1.45;
-  color: rgba(240, 230, 215, 0.8);
-  position: relative;
-  padding-left: 12px;
 }
 
-.dossier-highlights li::before {
-  content: "◆";
-  position: absolute;
-  left: 0;
-  color: #df8838;
-  font-size: 6px;
-  top: 4px;
-}
-
-.dossier-live-stat {
+.details-live-stat {
   margin: 4px 0 0;
-  font-size: 10.5px;
-  color: #78c882;
+  font-size: 11px;
+  color: #7ab87a;
+  letter-spacing: 0.5px;
 }
 
-/* Actions */
-.dossier-actions {
+.details-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 14px;
   border-top: 1px solid rgba(220, 140, 60, 0.2);
-  padding-top: 12px;
+  padding-top: 16px;
 }
 
-.dossier-links {
+.footer-links {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
-.dossier-btn {
+.project-cta {
   display: inline-flex;
   align-items: center;
-  font-size: 11.5px;
-  letter-spacing: 0.8px;
-  padding: 6px 12px;
-  text-decoration: none;
-  border-radius: 2px;
-  transition: all 0.25s ease;
-}
-
-.dossier-btn.primary {
-  background: rgba(220, 110, 30, 0.2);
-  border: 1px solid #df8838;
-  color: #f0b06a;
-}
-
-.dossier-btn.primary:hover {
-  background: #df8838;
-  color: #100d09;
-}
-
-.dossier-btn.secondary {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(240, 230, 215, 0.8);
-}
-
-.dossier-btn.secondary:hover {
-  border-color: rgba(220, 140, 60, 0.6);
-  color: #fff;
-}
-
-.dossier-nav {
-  display: flex;
-  align-items: center;
   gap: 6px;
-}
-
-.dossier-nav button {
-  background: rgba(18, 14, 10, 0.85);
-  border: 1px solid rgba(220, 140, 60, 0.3);
-  color: #f0b06a;
-  font-size: 10px;
-  padding: 4px 8px;
+  font-size: 11.5px;
+  letter-spacing: 1px;
+  padding: 9px 18px;
   border-radius: 2px;
+  text-decoration: none;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.dossier-nav button:hover {
-  background: rgba(220, 110, 30, 0.25);
-  color: #fff;
+.project-cta.primary {
+  background: rgba(220, 140, 60, 0.2);
+  border: 1px solid #df8838;
+  color: #fff2dd;
+  font-weight: 600;
 }
 
-.nav-index {
-  font-size: 10px;
+.project-cta.primary:hover {
+  background: #df8838;
+  color: #0c0906;
+}
+
+.project-cta.secondary {
+  background: rgba(18, 14, 10, 0.8);
+  border: 1px solid rgba(220, 140, 60, 0.4);
+  color: #ffaa55;
+}
+
+.project-cta.secondary:hover {
+  border-color: #ffaa55;
+  background: rgba(30, 22, 16, 0.95);
+}
+
+.return-floor-btn {
+  background: transparent;
+  border: none;
+  color: rgba(220, 205, 185, 0.65);
+  font-size: 11.5px;
   letter-spacing: 1px;
-  color: rgba(240, 230, 215, 0.55);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.return-floor-btn:hover {
+  color: #fff2dd;
 }
 
 /* ============================================================
-   RESPONSIVE DESIGN (Tablets & Mobile Screens)
+   RESPONSIVE LAYOUT (1200px, 900px, 768px, 440px)
    ============================================================ */
 
-@media (max-width: 1024px) {
-  .project-reward-dossier {
-    left: 20px;
-    width: min(44vw, 440px);
-  }
-}
-
-@media (max-width: 820px) {
-  .forge-stage {
-    padding: 12px 14px 16px;
+@media (max-width: 1080px) {
+  .workshop-stations-layout {
+    grid-template-columns: 1fr;
+    gap: 18px;
   }
 
-  .forge-nav {
-    flex-wrap: wrap;
-    gap: 8px;
+  .inspection-card {
+    grid-template-columns: 1fr;
+    max-height: 88vh;
   }
 
-  .weapon-rack {
-    max-width: 100%;
-    order: 2;
-  }
-
-  .project-reward-dossier {
-    position: fixed;
-    left: 50%;
-    top: auto;
-    bottom: 0;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 100vw;
-    max-height: 52vh;
-    border-radius: 12px 12px 0 0;
-    padding: 16px 18px 48px;
-    border-left: none;
+  .card-sword-focus {
     border-right: none;
-    border-bottom: none;
+    border-bottom: 1px solid rgba(220, 140, 60, 0.2);
+    padding: 20px 16px 16px;
   }
 
-  @keyframes dossierSlideIn {
-    from {
-      opacity: 0;
-      transform: translateX(-50%) translateY(40px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-  }
-
-  .anvil-zone {
-    margin-bottom: 6px;
-    height: clamp(220px, 34vh, 320px);
-  }
-
-  .workpiece-stage {
-    bottom: 96px;
-  }
-
-  .stage-reveal {
-    bottom: 30px;
-  }
-
-  .forged-sword-img {
-    max-height: clamp(170px, 26vh, 240px);
-  }
-
-  .pip-label {
-    display: none;
+  .focused-sword-img {
+    max-height: 180px;
   }
 }
 
-@media (max-width: 480px) {
-  .strike-trigger-btn {
-    font-size: 11px;
-    padding: 8px 16px;
-    letter-spacing: 1.2px;
+@media (max-width: 768px) {
+  .workshop-floor {
+    padding: 12px 14px;
   }
 
-  .key-hint {
-    display: none;
+  .forging-intro-footer {
+    bottom: 20px;
+    right: 50%;
+    transform: translateX(50%);
+    width: max-content;
   }
 
-  .track-pip {
-    padding: 3px 5px;
-    font-size: 9px;
+  .workshop-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
 
-  .anvil-svg {
-    width: 200px;
+  .workshop-zone-nav {
+    justify-content: flex-start;
+  }
+
+  .details-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .footer-links {
+    flex-direction: column;
   }
 }
 
-/* ---------- REDUCED MOTION ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .anvil-zone.is-jolting,
-  .craftsman-hammer.is-swinging,
+  .craftsman-hammer.is-striking,
+  .intro-anvil-rig.is-jolting,
   .spark-ember,
   .vapor,
-  .forged-sword-img,
-  .project-reward-dossier {
-    animation: none;
-    transition: none;
+  .fire-flame,
+  .ember,
+  .hone-blade-wrap,
+  .h-spark {
+    animation: none !important;
   }
 }
