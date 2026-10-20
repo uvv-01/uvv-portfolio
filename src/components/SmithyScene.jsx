@@ -1,48 +1,38 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import "./smithy.css";
 import projects from "../data/projects.js";
-import { fetchGithubRepos } from "../utils/github.js";
 import strikeSound from "../assets/sounds/sword.mp3";
 import smithyBg from "../assets/images/smithy-bg.webp";
 
 export default function SmithyScene({ goBack }) {
-  // Check if visitor specifically requested instant workshop or specific project in URL
   const queryParams = useMemo(() => new URLSearchParams(window.location.search), []);
-  const initialSkip = queryParams.get("skipIntro") === "1" || queryParams.get("forged") === "1" || !!queryParams.get("inspect");
+  const initialSkip =
+    queryParams.get("skipIntro") === "1" ||
+    queryParams.get("forged") === "1" ||
+    !!queryParams.get("inspect");
   const initialInspect = queryParams.get("inspect");
 
   // View state: 'forging' (the cinematic loading intro) -> 'workshop' (the project workshop)
   const [viewMode, setViewMode] = useState(initialSkip ? "workshop" : "forging");
 
-  // Forging sequence phases:
-  // 0 = raw metal in coals/on anvil
-  // 1 = hammer strike 1 (draw steel)
-  // 2 = hammer strike 2 (fuller & bevel)
-  // 3 = cooling & finishing
-  // 4 = finished blade reveal + camera pull away
+  // Forging sequence phases
   const [forgeStage, setForgeStage] = useState(initialSkip ? 4 : 0);
   const [hammerActive, setHammerActive] = useState(false);
   const [impactSparks, setImpactSparks] = useState(false);
   const [anvilJolt, setAnvilJolt] = useState(false);
   const [steamVapor, setSteamVapor] = useState(false);
 
-  // Workshop state
+  // Selected project for inspection note
   const [selectedProject, setSelectedProject] = useState(() => {
     if (!initialInspect) return null;
     return projects.find((p) => p.id === initialInspect) || null;
   });
-  const [activeZone, setActiveZone] = useState("all"); // 'all', 'ongoing', 'sharpening', 'completed'
-  const [liveRepos, setLiveRepos] = useState(null);
 
   const audioRef = useRef(null);
   const introTimersRef = useRef([]);
+  const canvasContainerRef = useRef(null);
 
-  // Split projects into the three physical workshop zones
-  const ongoingProjects = useMemo(() => projects.filter((p) => p.stage === "ongoing"), []);
-  const sharpeningProject = useMemo(() => projects.find((p) => p.stage === "finishing") || projects[2], []);
-  const completedProjects = useMemo(() => projects.filter((p) => p.stage === "completed"), []);
-
-  // Initialize audio instance safely
+  // Initialize strike audio safely
   useEffect(() => {
     const audio = new Audio(strikeSound);
     audio.volume = 0.55;
@@ -56,11 +46,12 @@ export default function SmithyScene({ goBack }) {
     };
   }, []);
 
-  const playStrike = useCallback(() => {
+  const playStrike = useCallback((volume = 0.55) => {
     const a = audioRef.current;
     if (a) {
       try {
         a.currentTime = 0;
+        a.volume = volume;
         a.play().catch(() => {});
       } catch (err) {
         void err;
@@ -68,18 +59,7 @@ export default function SmithyScene({ goBack }) {
     }
   }, []);
 
-  // Fetch real GitHub facts for live metadata updates
-  useEffect(() => {
-    let alive = true;
-    fetchGithubRepos().then((repos) => {
-      if (alive && repos.length) setLiveRepos(repos);
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  // Transition into workshop directly
+  // Enter workshop directly
   const enterWorkshop = useCallback(() => {
     introTimersRef.current.forEach(clearTimeout);
     introTimersRef.current = [];
@@ -99,7 +79,7 @@ export default function SmithyScene({ goBack }) {
 
       // 1.45s: Strike 1 IMPACT!
       setTimeout(() => {
-        playStrike();
+        playStrike(0.6);
         setImpactSparks(true);
         setAnvilJolt(true);
         setForgeStage(1);
@@ -117,7 +97,7 @@ export default function SmithyScene({ goBack }) {
 
       // 2.65s: Strike 2 IMPACT! Fuller & bevel shaped
       setTimeout(() => {
-        playStrike();
+        playStrike(0.65);
         setImpactSparks(true);
         setAnvilJolt(true);
         setForgeStage(2);
@@ -152,7 +132,7 @@ export default function SmithyScene({ goBack }) {
     };
   }, [initialSkip, playStrike]);
 
-  // Clean keyboard listeners
+  // Clean keyboard listeners (Escape closes note, or leaves workshop)
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") {
@@ -169,10 +149,38 @@ export default function SmithyScene({ goBack }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [selectedProject, viewMode, enterWorkshop, goBack]);
 
-  const selectedLive = useMemo(() => {
-    if (!selectedProject || !liveRepos) return null;
-    return liveRepos.find((r) => r.name === selectedProject.repo) || null;
-  }, [selectedProject, liveRepos]);
+  const selectSword = useCallback(
+    (proj) => {
+      playStrike(0.25);
+      setSelectedProject((prev) => (prev?.id === proj.id ? null : proj));
+    },
+    [playStrike]
+  );
+
+  const scrollToStation = useCallback((station) => {
+    const el = canvasContainerRef.current;
+    if (!el) return;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    if (maxScroll <= 0) return;
+    if (station === "wall") {
+      el.scrollTo({ left: 0, behavior: "smooth" });
+    } else if (station === "anvil") {
+      el.scrollTo({ left: maxScroll / 2, behavior: "smooth" });
+    } else if (station === "hearth") {
+      el.scrollTo({ left: maxScroll, behavior: "smooth" });
+    }
+  }, []);
+
+  // Initial mobile center scroll when entering workshop
+  useEffect(() => {
+    if (viewMode === "workshop" && canvasContainerRef.current) {
+      const el = canvasContainerRef.current;
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      if (maxScroll > 0) {
+        el.scrollLeft = maxScroll / 2;
+      }
+    }
+  }, [viewMode]);
 
   return (
     <div
@@ -180,7 +188,7 @@ export default function SmithyScene({ goBack }) {
       role="dialog"
       aria-label="The Blacksmith Workshop — Projects"
     >
-      {/* Contained workshop background — zero bleed into previous scenes */}
+      {/* Contained workshop background */}
       <div
         className="workshop-bg-layer"
         style={{ backgroundImage: `url(${smithyBg})` }}
@@ -216,9 +224,33 @@ export default function SmithyScene({ goBack }) {
                     <stop offset="100%" stopColor="#24170d" />
                   </linearGradient>
                 </defs>
-                <rect x="40" y="38" width="105" height="11" rx="4" fill="url(#introHammerWood)" stroke="#1a110a" strokeWidth="1" transform="rotate(-25 90 44)" />
-                <rect x="24" y="24" width="34" height="22" rx="2" fill="url(#introHammerSteel)" stroke="#110d0a" strokeWidth="1.5" />
-                <polygon points="24,24 18,28 18,42 24,46" fill="#36302a" stroke="#110d0a" strokeWidth="1" />
+                <rect
+                  x="40"
+                  y="38"
+                  width="105"
+                  height="11"
+                  rx="4"
+                  fill="url(#introHammerWood)"
+                  stroke="#1a110a"
+                  strokeWidth="1"
+                  transform="rotate(-25 90 44)"
+                />
+                <rect
+                  x="24"
+                  y="24"
+                  width="34"
+                  height="22"
+                  rx="2"
+                  fill="url(#introHammerSteel)"
+                  stroke="#110d0a"
+                  strokeWidth="1.5"
+                />
+                <polygon
+                  points="24,24 18,28 18,42 24,46"
+                  fill="#36302a"
+                  stroke="#110d0a"
+                  strokeWidth="1"
+                />
                 <rect x="54" y="31" width="4" height="8" rx="1" fill="#18130e" />
               </svg>
             </div>
@@ -244,7 +276,7 @@ export default function SmithyScene({ goBack }) {
               </div>
             )}
 
-            {/* Workpiece strictly on anvil face */}
+            {/* Workpiece on anvil face */}
             <div className={`intro-workpiece stage-${forgeStage}`}>
               {forgeStage === 0 && (
                 <div className="workpiece-bar raw-stock" title="Rough incandescent billet">
@@ -298,13 +330,27 @@ export default function SmithyScene({ goBack }) {
                     <stop offset="100%" stopColor="#080605" />
                   </radialGradient>
                 </defs>
-                <path d="M 50 135 L 290 135 L 305 180 L 35 180 Z" fill="url(#introAnvilStump)" stroke="#110d09" strokeWidth="2" />
+                <path
+                  d="M 50 135 L 290 135 L 305 180 L 35 180 Z"
+                  fill="url(#introAnvilStump)"
+                  stroke="#110d09"
+                  strokeWidth="2"
+                />
                 <line x1="60" y1="135" x2="48" y2="180" stroke="#251a12" strokeWidth="2" opacity="0.6" />
                 <line x1="120" y1="135" x2="114" y2="180" stroke="#251a12" strokeWidth="2" opacity="0.4" />
                 <line x1="220" y1="135" x2="228" y2="180" stroke="#251a12" strokeWidth="2" opacity="0.5" />
-                <path d="M 65 135 C 90 120 100 105 110 95 L 230 95 C 240 105 250 120 275 135 Z" fill="url(#introAnvilSteel)" />
-                <path d="M 110 95 C 115 75 120 60 122 50 L 218 50 C 220 60 225 75 230 95 Z" fill="url(#introAnvilSteel)" />
-                <path d="M 122 50 C 90 48 45 42 20 40 C 45 56 95 64 122 68 Z" fill="url(#introAnvilSteel)" />
+                <path
+                  d="M 65 135 C 90 120 100 105 110 95 L 230 95 C 240 105 250 120 275 135 Z"
+                  fill="url(#introAnvilSteel)"
+                />
+                <path
+                  d="M 110 95 C 115 75 120 60 122 50 L 218 50 C 220 60 225 75 230 95 Z"
+                  fill="url(#introAnvilSteel)"
+                />
+                <path
+                  d="M 122 50 C 90 48 45 42 20 40 C 45 56 95 64 122 68 Z"
+                  fill="url(#introAnvilSteel)"
+                />
                 <path d="M 218 50 L 300 50 L 310 70 L 225 68 Z" fill="url(#introAnvilSteel)" />
                 <polygon points="20,40 300,40 300,50 20,50" fill="url(#introAnvilFace)" />
                 <rect x="270" y="43" width="8" height="4" fill="#140f0b" rx="1" />
@@ -327,14 +373,14 @@ export default function SmithyScene({ goBack }) {
       )}
 
       {/* ========================================================
-          2. THE PROJECT WORKSHOP FLOOR
+          2. THE WORKSHOP ENVIRONMENT (The Workshop IS the Interface)
           ======================================================== */}
       {viewMode === "workshop" && (
         <main
           className={`workshop-floor ${selectedProject ? "has-focus" : ""}`}
           aria-label="Blacksmith Project Workshop"
         >
-          {/* Top Bar: Return to Room + Mobile Zone Selector */}
+          {/* Top Exit Navigation */}
           <header className="workshop-top-bar">
             <button
               type="button"
@@ -344,358 +390,250 @@ export default function SmithyScene({ goBack }) {
             >
               &#8592; Workshop Chamber
             </button>
-
-            {/* Mobile / Compact Category Selector */}
-            <nav className="workshop-zone-nav" aria-label="Workshop zones">
-              <button
-                type="button"
-                className={`zone-nav-btn ${activeZone === "all" ? "is-active" : ""}`}
-                onClick={() => setActiveZone("all")}
-              >
-                All Stations
-              </button>
-              <button
-                type="button"
-                className={`zone-nav-btn ${activeZone === "ongoing" ? "is-active" : ""}`}
-                onClick={() => setActiveZone("ongoing")}
-              >
-                Half-Forged (WIP)
-              </button>
-              <button
-                type="button"
-                className={`zone-nav-btn ${activeZone === "sharpening" ? "is-active" : ""}`}
-                onClick={() => setActiveZone("sharpening")}
-              >
-                Hearth &amp; Hone
-              </button>
-              <button
-                type="button"
-                className={`zone-nav-btn ${activeZone === "completed" ? "is-active" : ""}`}
-                onClick={() => setActiveZone("completed")}
-              >
-                Finished Blades
-              </button>
-            </nav>
           </header>
 
-          {/* Main 3-Zone Workshop Environment */}
-          <div className="workshop-stations-layout">
-            {/* ----------------------------------------------------
-                ZONE 1: HALF-FORGED SWORDS (Ongoing Projects)
-                ---------------------------------------------------- */}
-            {(activeZone === "all" || activeZone === "ongoing") && (
-              <section
-                className="workshop-station station-ongoing"
-                aria-label="Half-forged swords — ongoing work in progress"
-              >
-                <div className="station-header">
-                  <span className="station-eyebrow">&#9881; ANVIL &amp; STANDS</span>
-                  <h2 className="station-title">Half-Forged Swords</h2>
-                  <p className="station-desc">Unfinished blades currently being shaped on the anvil.</p>
-                </div>
+          {/* The Physical Workshop Canvas */}
+          <div className="workshop-canvas-container" ref={canvasContainerRef}>
+            <div
+              className={`workshop-canvas ${selectedProject ? "is-dimmed" : ""}`}
+              style={{ backgroundImage: `url(${smithyBg})` }}
+            >
+              {/* Subtle ambient lighting layers */}
+              <div className="hearth-warmth-glow" aria-hidden="true" />
+              <div className="hearth-smoke-wisps" aria-hidden="true" />
 
-                <div className="swords-rack ongoing-rack">
-                  {ongoingProjects.map((proj) => (
-                    <article
-                      key={proj.id}
-                      className={`sword-stand ongoing-stand ${selectedProject?.id === proj.id ? "is-selected" : ""}`}
-                      onClick={() => setSelectedProject(proj)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") setSelectedProject(proj);
-                      }}
-                      aria-label={`Inspect ongoing work: ${proj.title}`}
-                    >
-                      <div className="stand-pedestal" aria-hidden="true" />
-                      <div className="half-forged-blade-preview">
-                        <img
-                          src={proj.swordImg}
-                          alt=""
-                          className="blade-img partial-forge"
-                          draggable="false"
-                        />
-                        <span className="rough-glow-sheen" aria-hidden="true" />
-                      </div>
-                      <div className="stand-tag">
-                        <span className="tag-status">WIP &bull; {proj.stageLabel}</span>
-                        <h3 className="tag-title">{proj.title}</h3>
-                        <small className="tag-identity">{proj.swordName}</small>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* ----------------------------------------------------
-                ZONE 2: HEARTH FIRE + SHARPENING (Active Finishing)
-                ---------------------------------------------------- */}
-            {(activeZone === "all" || activeZone === "sharpening") && (
-              <section
-                className="workshop-station station-hearth"
-                aria-label="Hearth fire and sharpening stone — active finishing"
-              >
-                <div className="station-header">
-                  <span className="station-eyebrow">&#128293; THE HEARTH WHEEL</span>
-                  <h2 className="station-title">Fire &amp; Sharpening</h2>
-                  <p className="station-desc">Master blade receiving its final whetstone polish.</p>
-                </div>
-
-                <div
-                  className={`sharpening-hearth-rig ${selectedProject?.id === sharpeningProject.id ? "is-selected" : ""}`}
-                  onClick={() => setSelectedProject(sharpeningProject)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") setSelectedProject(sharpeningProject);
-                  }}
-                  aria-label={`Inspect sharpening work: ${sharpeningProject.title}`}
+              {/* --------------------------------------------------
+                  PHYSICAL SWORD OBJECT 1: ON THE ANVIL
+                  (FoveaEdge — Ongoing Work in Progress)
+                  -------------------------------------------------- */}
+              {projects[0] && (
+                <button
+                  type="button"
+                  className={`sword-object obj-anvil ${selectedProject?.id === projects[0].id ? "is-active" : ""}`}
+                  onClick={() => selectSword(projects[0])}
+                  aria-label={`Inspect ${projects[0].title} — ${projects[0].physicalLocation}`}
                 >
-                  {/* Believable Small Hearth Fire */}
-                  <div className="hearth-fire-box" aria-hidden="true">
-                    <div className="fire-core" />
-                    <div className="fire-flame f1" />
-                    <div className="fire-flame f2" />
-                    <div className="fire-flame f3" />
-                    <div className="hearth-embers-cluster">
-                      <span className="ember e1" />
-                      <span className="ember e2" />
-                      <span className="ember e3" />
-                    </div>
+                  <div className="sword-sprite-wrap anvil-blade-wrap">
+                    <img
+                      src={projects[0].swordImg}
+                      alt=""
+                      className="sword-img rough-forged"
+                      draggable="false"
+                    />
+                    <span className="core-ember-glow" aria-hidden="true" />
+                    <span className="blade-shimmer" aria-hidden="true" />
                   </div>
+                  <span className="sword-whisper-label">
+                    <strong>{projects[0].title}</strong>
+                    <small>{projects[0].physicalLocation}</small>
+                  </span>
+                </button>
+              )}
 
-                  {/* Whetstone Sharpening Surface with Subtly Moving Blade */}
-                  <div className="sharpening-stone-surface" aria-hidden="true">
-                    <div className="whetstone-block" />
-                    <div className="hone-sparks-stream">
-                      <span className="h-spark s1" />
-                      <span className="h-spark s2" />
-                      <span className="h-spark s3" />
-                    </div>
-                    <div className="hone-blade-wrap">
-                      <img
-                        src={sharpeningProject.swordImg}
-                        alt=""
-                        className="hone-blade-img"
-                        draggable="false"
-                      />
-                    </div>
+              {/* --------------------------------------------------
+                  PHYSICAL SWORD OBJECT 2: AT HEARTH WHETSTONE
+                  (UVV Berserk Workshop — Active Finishing)
+                  -------------------------------------------------- */}
+              {projects[1] && (
+                <button
+                  type="button"
+                  className={`sword-object obj-hearth ${selectedProject?.id === projects[1].id ? "is-active" : ""}`}
+                  onClick={() => selectSword(projects[1])}
+                  aria-label={`Inspect ${projects[1].title} — ${projects[1].physicalLocation}`}
+                >
+                  <div className="sword-sprite-wrap hearth-blade-wrap">
+                    <img
+                      src={projects[1].swordImg}
+                      alt=""
+                      className="sword-img whetstone-blade"
+                      draggable="false"
+                    />
+                    <span className="hearth-hone-sparks" aria-hidden="true">
+                      <span className="h-spark hs1" />
+                      <span className="h-spark hs2" />
+                      <span className="h-spark hs3" />
+                    </span>
+                    <span className="blade-shimmer" aria-hidden="true" />
                   </div>
+                  <span className="sword-whisper-label">
+                    <strong>{projects[1].title}</strong>
+                    <small>{projects[1].physicalLocation}</small>
+                  </span>
+                </button>
+              )}
 
-                  <div className="sharpening-card-tag">
-                    <span className="tag-status">ACTIVE &bull; {sharpeningProject.stageLabel}</span>
-                    <h3 className="tag-title">{sharpeningProject.title}</h3>
-                    <small className="tag-identity">{sharpeningProject.swordName}</small>
+              {/* --------------------------------------------------
+                  PHYSICAL SWORD OBJECT 3: MOUNTED ON STONE WALL
+                  (OpenVINO OSS Navigator — Master Greatsword)
+                  -------------------------------------------------- */}
+              {projects[2] && (
+                <button
+                  type="button"
+                  className={`sword-object obj-wall-upper ${selectedProject?.id === projects[2].id ? "is-active" : ""}`}
+                  onClick={() => selectSword(projects[2])}
+                  aria-label={`Inspect ${projects[2].title} — ${projects[2].physicalLocation}`}
+                >
+                  <div className="sword-sprite-wrap wall-upper-wrap">
+                    <img
+                      src={projects[2].swordImg}
+                      alt=""
+                      className="sword-img master-greatsword"
+                      draggable="false"
+                    />
+                    <span className="blade-shimmer" aria-hidden="true" />
                   </div>
-                </div>
-              </section>
-            )}
+                  <span className="sword-whisper-label">
+                    <strong>{projects[2].title}</strong>
+                    <small>{projects[2].physicalLocation}</small>
+                  </span>
+                </button>
+              )}
 
-            {/* ----------------------------------------------------
-                ZONE 3: FINISHED SWORDS (Completed Projects)
-                ---------------------------------------------------- */}
-            {(activeZone === "all" || activeZone === "completed") && (
-              <section
-                className="workshop-station station-completed"
-                aria-label="Finished swords — completed projects"
-              >
-                <div className="station-header">
-                  <span className="station-eyebrow">&#9876; THE ARMORY WALL</span>
-                  <h2 className="station-title">Finished Blades</h2>
-                  <p className="station-desc">Completed weapons honed and ready for battle.</p>
-                </div>
+              {/* --------------------------------------------------
+                  PHYSICAL SWORD OBJECT 4: IN TIMBER RACK
+                  (Face Detection Auto-Switch — Crossguard Blade)
+                  -------------------------------------------------- */}
+              {projects[3] && (
+                <button
+                  type="button"
+                  className={`sword-object obj-wall-rack ${selectedProject?.id === projects[3].id ? "is-active" : ""}`}
+                  onClick={() => selectSword(projects[3])}
+                  aria-label={`Inspect ${projects[3].title} — ${projects[3].physicalLocation}`}
+                >
+                  <div className="sword-sprite-wrap wall-rack-wrap">
+                    <img
+                      src={projects[3].swordImg}
+                      alt=""
+                      className="sword-img rack-blade"
+                      draggable="false"
+                    />
+                    <span className="blade-shimmer" aria-hidden="true" />
+                  </div>
+                  <span className="sword-whisper-label">
+                    <strong>{projects[3].title}</strong>
+                    <small>{projects[3].physicalLocation}</small>
+                  </span>
+                </button>
+              )}
 
-                <div className="swords-rack completed-rack">
-                  {completedProjects.map((proj) => (
-                    <article
-                      key={proj.id}
-                      className={`sword-stand completed-stand ${selectedProject?.id === proj.id ? "is-selected" : ""}`}
-                      onClick={() => setSelectedProject(proj)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") setSelectedProject(proj);
-                      }}
-                      aria-label={`Inspect completed sword: ${proj.title}`}
-                    >
-                      <div className="stand-pedestal finished" aria-hidden="true" />
-                      <div className="finished-blade-preview">
-                        <img
-                          src={proj.swordImg}
-                          alt=""
-                          className="blade-img finished-polish"
-                          draggable="false"
-                        />
-                        <span className="steel-glint" aria-hidden="true" />
-                      </div>
-                      <div className="stand-tag">
-                        <span className="tag-status completed">SHIPPED</span>
-                        <h3 className="tag-title">{proj.title}</h3>
-                        <small className="tag-identity">{proj.swordName}</small>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            )}
+              {/* --------------------------------------------------
+                  PHYSICAL SWORD OBJECT 5: ON FLOOR TIMBER RACK
+                  (Arya Algorithms & Foundation — Honed Longsword)
+                  -------------------------------------------------- */}
+              {projects[4] && (
+                <button
+                  type="button"
+                  className={`sword-object obj-floor-rack ${selectedProject?.id === projects[4].id ? "is-active" : ""}`}
+                  onClick={() => selectSword(projects[4])}
+                  aria-label={`Inspect ${projects[4].title} — ${projects[4].physicalLocation}`}
+                >
+                  <div className="sword-sprite-wrap floor-rack-wrap">
+                    <img
+                      src={projects[4].swordImg}
+                      alt=""
+                      className="sword-img floor-blade"
+                      draggable="false"
+                    />
+                    <span className="blade-shimmer" aria-hidden="true" />
+                  </div>
+                  <span className="sword-whisper-label">
+                    <strong>{projects[4].title}</strong>
+                    <small>{projects[4].physicalLocation}</small>
+                  </span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* ========================================================
-              3. RESTRAINED PROJECT FOCUS DOSSIER (Selected Sword)
+              3. PHYSICAL WORKSHOP NOTE (Compact & Restrained)
               ======================================================== */}
           {selectedProject && (
             <aside
-              className="project-inspection-modal"
+              className="workshop-note-backdrop"
+              onClick={() => setSelectedProject(null)}
               role="dialog"
-              aria-label={`Inspection: ${selectedProject.title}`}
+              aria-label={`Record: ${selectedProject.title}`}
             >
               <div
-                className="modal-backdrop"
-                onClick={() => setSelectedProject(null)}
-                aria-hidden="true"
-              />
-
-              <div className="inspection-card">
+                className="workshop-note"
+                onClick={(e) => e.stopPropagation()}
+                role="document"
+              >
                 <button
                   type="button"
-                  className="card-close-btn"
+                  className="note-close-btn"
                   onClick={() => setSelectedProject(null)}
-                  aria-label="Return to workshop floor"
+                  aria-label="Return to workshop"
                 >
                   &times;
                 </button>
 
-                {/* Left Column: Sword Visual in Focus */}
-                <div className="card-sword-focus">
-                  <img
-                    src={selectedProject.swordImg}
-                    alt={selectedProject.swordName}
-                    className="focused-sword-img"
-                    draggable="false"
-                  />
-                  <div className="blade-seal">
-                    <span className="seal-moniker">{selectedProject.swordName}</span>
-                    <span className="seal-stage-badge">
-                      {selectedProject.stage === "ongoing"
-                        ? "Half-Forged (In Progress)"
-                        : selectedProject.stage === "finishing"
-                        ? "On the Whetstone (Finishing)"
-                        : "Master Blade (Completed)"}
-                    </span>
-                  </div>
+                <div className="note-eyebrow">
+                  <span className="note-location">{selectedProject.physicalLocation}</span>
+                  <span className="note-sep" aria-hidden="true">&bull;</span>
+                  <span className="note-stage">{selectedProject.stageLabel}</span>
                 </div>
 
-                {/* Right Column: Verified Project Facts */}
-                <div className="card-details-panel">
-                  <header className="details-header">
-                    <div className="status-pill">
-                      <span className="status-dot" />
-                      {selectedProject.stageLabel}
-                    </div>
-                    <h2 className="details-title">{selectedProject.title}</h2>
-                    <p className="details-desc">{selectedProject.desc}</p>
-                  </header>
+                <h2 className="note-title">{selectedProject.title}</h2>
 
-                  {/* Tech Tags */}
-                  <div className="details-tech-row" aria-label="Technologies used">
-                    {selectedProject.tech.split("•").map((t, idx) => (
-                      <span key={idx} className="tech-badge">
-                        {t.trim()}
-                      </span>
-                    ))}
-                  </div>
+                <p className="note-purpose">{selectedProject.shortPurpose}</p>
 
-                  {/* Content for Ongoing vs Completed */}
-                  <div className="details-content-body">
-                    {selectedProject.stage === "ongoing" ? (
-                      <>
-                        <div className="field-group">
-                          <h3>What It Is</h3>
-                          <p>{selectedProject.whatItIs}</p>
-                        </div>
-                        <div className="field-group">
-                          <h3>What I Am Building</h3>
-                          <p>{selectedProject.whatBuilding}</p>
-                        </div>
-                        <div className="field-group">
-                          <h3>Current Technical Stage</h3>
-                          <p>{selectedProject.currentPhase}</p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="field-group">
-                          <h3>Purpose</h3>
-                          <p>{selectedProject.purpose}</p>
-                        </div>
-                        <div className="field-group">
-                          <h3>What I Built</h3>
-                          <p>{selectedProject.built}</p>
-                        </div>
-                        {selectedProject.result && (
-                          <div className="field-group">
-                            <h3>Verified Result</h3>
-                            <p>{selectedProject.result}</p>
-                          </div>
-                        )}
-                      </>
-                    )}
+                <div className="note-tech">
+                  <span className="tech-heading">Forged with:</span>
+                  <span className="tech-tags">{selectedProject.tech}</span>
+                </div>
 
-                    {/* Highlights */}
-                    {selectedProject.highlights && (
-                      <ul className="details-highlights">
-                        {selectedProject.highlights.map((h, i) => (
-                          <li key={i}>{h}</li>
-                        ))}
-                      </ul>
-                    )}
-
-                    {/* Live GitHub status if available */}
-                    {selectedLive && (
-                      <p className="details-live-stat">
-                        &#9679; GitHub Active &bull; Last updated {new Date(selectedLive.updated_at).toLocaleDateString()}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Actions: Repository & Demo */}
-                  <footer className="details-footer">
-                    <div className="footer-links">
-                      <a
-                        href={selectedProject.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="project-cta primary"
-                        aria-label={`Open GitHub repository for ${selectedProject.title}`}
-                      >
-                        Inspect Repository &#8599;
-                      </a>
-                      {selectedProject.demo && (
-                        <a
-                          href={selectedProject.demo}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="project-cta secondary"
-                          aria-label={`Open live demo for ${selectedProject.title}`}
-                        >
-                          Live Deployment &#8599;
-                        </a>
-                      )}
-                    </div>
-
-                    <button
-                      type="button"
-                      className="return-floor-btn"
-                      onClick={() => setSelectedProject(null)}
+                <div className="note-actions">
+                  <a
+                    href={selectedProject.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="note-action-link github"
+                    aria-label={`Open repository for ${selectedProject.title}`}
+                  >
+                    GitHub &#8599;
+                  </a>
+                  {selectedProject.demo && (
+                    <a
+                      href={selectedProject.demo}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="note-action-link demo"
+                      aria-label={`Open live deployment for ${selectedProject.title}`}
                     >
-                      &#8592; Back to Workshop Floor
-                    </button>
-                  </footer>
+                      Live Demo &#8599;
+                    </a>
+                  )}
                 </div>
               </div>
             </aside>
           )}
+
+          {/* Ambient discovery aid on mobile */}
+          <nav className="mobile-station-cues" aria-label="Workshop physical stations">
+            <button
+              type="button"
+              className="cue-pill"
+              onClick={() => scrollToStation("wall")}
+            >
+              &#9881; Wall Blades
+            </button>
+            <button
+              type="button"
+              className="cue-pill"
+              onClick={() => scrollToStation("anvil")}
+            >
+              &#9874; Anvil
+            </button>
+            <button
+              type="button"
+              className="cue-pill"
+              onClick={() => scrollToStation("hearth")}
+            >
+              &#128293; Hearth
+            </button>
+          </nav>
         </main>
       )}
     </div>
